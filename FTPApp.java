@@ -1,30 +1,17 @@
-package com.EIA;
+package agileFTP;
 
 import java.util.*;
 
-
-// http://www.dreamincode.net/forums/topic/255103-how-to-create-console-application-with-different-commands/
-// http://www.journaldev.com/1624/command-design-pattern-in-java-example-tutorial
 
 // FTP for testing connect, login, ls, get (Not much else can be done on this server.
 //                                          Setup a local ftp for more functionality)
 // host speedtest.tele2.net
 // port 21
 // username Anonymous
-// password <none>, can use anything really, in this basic implementation you must provide a password of some kind.
+// password <none>
 
-// Add a command to toggle local and remote mode.
-// Like
-// mode local
-// mode remote
-// Will switch between two sets of hashmaps.
-//
-// Setup the Status display Remote: Not connected>
-//                          Remote: Host: 192.168.1.1>
-//
-//                          Local: C:\Users\Paul>
-//
 
+// Class for the user interface.
 public class FTPApp {
 
     private EIAClient ftp = new EIAClient();
@@ -36,6 +23,7 @@ public class FTPApp {
     private HashMap<String, Runnable> commands = new HashMap<String, Runnable>();
 
 
+    // Setup and initialize the user interface.
     public static void main(String[] args) {
 
         FTPApp App = new FTPApp();
@@ -44,11 +32,12 @@ public class FTPApp {
 
     }
 
+    // Setup hashmap, initialize ftp and local objects.
     public boolean init() {
 
         commands.put("help", () -> { help();     });
         commands.put("exit", () -> { guard = false;
-            System.exit(0);});
+                                     System.exit(0);});
         commands.put("mode", () -> { mode(input[1]); });
 
         ftp.init(commands);
@@ -58,6 +47,7 @@ public class FTPApp {
         return true;
     }
 
+    // Displays command syntax help.
     public boolean help() {
 
         System.out.println("");
@@ -82,17 +72,21 @@ public class FTPApp {
         return true;
     }
 
+    // The main loop used to scan for user input.
     public boolean scanInput() {
 
         while(guard) {
 
             try {
+
+                // If our mode is local send commands to EIALocal class object.
                 if (currentMode.equalsIgnoreCase("local")) {
                     System.out.print("Local: " + local.getPath() + " > ");
                     input = scan.nextLine().split(" ");
                     local.execute(input);
                 }
 
+                // If our mode is remtoe send our commands to the EIAClient class object.
                 if (currentMode.equalsIgnoreCase("remote")) {
                     System.out.print("Remote: " + ftp.getHost() + " > ");
                     input = scan.nextLine().split(" ");
@@ -109,6 +103,7 @@ public class FTPApp {
 
     }
 
+    // Allows the user to switch the mode they are operating in, local or remote.
     public boolean mode(String choice) {
 
         if (choice.equalsIgnoreCase("remote")) {

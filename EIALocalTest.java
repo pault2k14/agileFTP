@@ -1,4 +1,4 @@
-package com.EIA;
+package agileFTP;
 
 import org.junit.Test;
 

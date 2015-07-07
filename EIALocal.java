@@ -1,4 +1,4 @@
-package com.EIA;
+package agileFTP;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -7,6 +7,7 @@ import java.util.HashMap;
 
 import org.apache.commons.io.FileUtils;
 
+// Class for local machine based tasks.
 public class EIALocal {
 
     private String []input = null;
@@ -19,12 +20,16 @@ public class EIALocal {
     }
 
 
+    // Lookup the method in the hashmap and then execute the
+    // corresponding method.
     public boolean execute(String []userInput) {
         input = userInput;
         commands.get(input[0].toLowerCase()).run();
         return true;
     }
 
+    // Add all of the FTPApp's local haspmap into our hashmap.
+    // Then load our local hashmap key's and lambda functions.
     public boolean init(HashMap main) {
         commands.putAll(main);
         commands.put("ls", () -> { ls(); } );
@@ -32,6 +37,7 @@ public class EIALocal {
         return true;
     }
 
+    // Display the contents of the currentDirectory.
     public boolean ls() {
 
         System.out.println("NAME  SIZE  LAST MODIFIED");

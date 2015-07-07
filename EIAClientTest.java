@@ -1,4 +1,4 @@
-package com.EIA;
+package agileFTP;
 
 import static org.junit.Assert.*;
 

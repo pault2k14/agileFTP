@@ -1,4 +1,4 @@
-package com.EIA;
+package agileFTP;
 
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.HashMap;
 
 
+// Class for all remote server tasks.
 public class EIAClient {
 
     private FTPClient ftp = new FTPClient();
@@ -15,6 +16,9 @@ public class EIAClient {
     private String host = "Not connected";
     private HashMap<String, Runnable> commands = new HashMap<String, Runnable>();
 
+
+    // Looks up the users command in the remote hashmap
+    // then runs the lambda function.
     public boolean execute(String []userInput) {
         input = userInput;
         commands.get(input[0].toLowerCase()).run();
@@ -22,11 +26,15 @@ public class EIAClient {
         return true;
     }
 
+    // Returns the hostname as a string.
     public String getHost() {
+
         return host;
     }
 
 
+    // Hashmap of the FTPApp is added to this hashmap
+    // Then the remote hashmap is setup.
     public boolean init(HashMap main) {
 
         commands.putAll(main);
@@ -37,6 +45,8 @@ public class EIAClient {
         return true;
     }
 
+
+    // Connect wrapper to determine if the user entered a password or not.
     public void connect(String []input) {
 
         if(input.length == 4) {
@@ -53,6 +63,8 @@ public class EIAClient {
 
     }
 
+
+    // Connect to the remote server with a password.
     public boolean connectWithPassword(String userHost, String port, String username, String password) {
 
         if (userHost.equals(null) || port.equals(null) || username.equals(null) || password.equals(null)) {
@@ -86,6 +98,7 @@ public class EIAClient {
     }
 
 
+    // Connect to the remote server with a blank password.
     public boolean connectNoPassword(String userHost, String port, String username) {
 
         if (userHost.equals(null) || port.equals(null) || username.equals(null)) {
@@ -118,6 +131,7 @@ public class EIAClient {
         return true;
     }
 
+    // Disconnect from the remote server.
     public boolean disconnect() {
 
         if (!ftp.isConnected()) {
@@ -136,6 +150,8 @@ public class EIAClient {
         return true;
     }
 
+
+    // Display the contents of the current remote directory.
     public boolean ls() {
 
         FTPFile []directories = null;

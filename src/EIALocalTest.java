@@ -1,4 +1,4 @@
-package agileFTP;
+package src;
 
 import org.junit.Test;
 

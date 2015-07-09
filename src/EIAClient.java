@@ -1,4 +1,4 @@
-package agileFTP;
+package src;
 
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
@@ -15,6 +15,8 @@ public class EIAClient {
     private String []input = null;
     private String host = "Not connected";
     private HashMap<String, Runnable> commands = new HashMap<String, Runnable>();
+
+    private ConnectionStore connectionStore = new ConnectionStore();
 
 
     // Looks up the users command in the remote hashmap
@@ -39,15 +41,23 @@ public class EIAClient {
 
         commands.putAll(main);
         commands.put("connect", () -> { connect(input); } );
+        commands.put("save", () -> { connectionStore.saveConnection(input); });
+        commands.put("list", () -> { connectionStore.listConnections(); });
+        commands.put("delete", () -> {connectionStore.deleteConnection(input); });
         commands.put("disconnect", () -> {disconnect(); } );
         commands.put("ls", () -> { ls(); } );
 
         return true;
     }
 
-
     // Connect wrapper to determine if the user entered a password or not.
     public void connect(String []input) {
+
+        // This case is when the user types <connect> <name of saved connection>
+        if(input.length == 2) {
+            input = connectionStore.retrieveConnection(input[1]);
+            if(input == null) return; // Connection name wasn't found
+        }
 
         if(input.length == 4) {
             connectNoPassword(input[1], input[2], input[3]);

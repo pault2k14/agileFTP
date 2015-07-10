@@ -218,9 +218,8 @@ public class EIAClient {
          * by calling some other method such as enterLocalActiveMode()
          * However: currently calling any connect method will reset the mode to ACTIVE_LOCAL_DATA_CONNECTION_MODE.
          *
-         * This is now commented out because it works without setting to passive mode/binary file type and
-         * I figured the less complicated, the better.  If we run into problems after adding more functionality
-         * this can be restored.
+         * This is now commented out because it works without setting to passive mode/binary file type.
+         * If we run into problems after adding more functionality, we can restore it.
          */
         /*
         ftp.enterLocalPassiveMode();

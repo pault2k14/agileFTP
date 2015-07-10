@@ -4,7 +4,11 @@ import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPClientConfig;
 import org.apache.commons.net.ftp.FTPFile;
-import java.io.IOException;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.*;
 import java.util.HashMap;
 
 
@@ -38,9 +42,12 @@ public class EIAClient {
     public boolean init(HashMap main) {
 
         commands.putAll(main);
-        commands.put("connect", () -> { connect(input); } );
+        commands.put("connect", () -> {
+            connect(input);
+        });
         commands.put("disconnect", () -> {disconnect(); } );
         commands.put("ls", () -> { ls(); } );
+        commands.put("download", () -> { download(input); });
 
         return true;
     }
@@ -181,6 +188,56 @@ public class EIAClient {
 
         return true;
 
+    }
+
+    //Get file from remove server
+    public boolean download (String[] input){
+        try {
+            if(!ftp.isConnected()){
+                System.out.println("Not connected.");
+                return false;
+            }
+
+            if(input.length != 3){
+                System.out.println("Incorrect number of parameters for download.  Type 'help' for command syntax.");
+                return false;
+            }
+
+        // Enter Local Passive mode to switch data connection mode from server-to-client (default mode) to client-to-server
+        // and to get through firewall and avoid potential connection issues
+        /**
+         * According to the API docs:
+         * The FTPClient will stay in PASSIVE_LOCAL_DATA_CONNECTION_MODE until the mode is changed
+         * by calling some other method such as enterLocalActiveMode()
+         * However: currently calling any connect method will reset the mode to ACTIVE_LOCAL_DATA_CONNECTION_MODE.
+         */
+        ftp.enterLocalPassiveMode();
+        try {
+            ftp.setFileType(FTP.BINARY_FILE_TYPE);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+            File downloaded = new File (input[2]);  //create local file
+            OutputStream downloadStream = new BufferedOutputStream(new FileOutputStream(downloaded));
+            boolean success = ftp.retrieveFile(input[1], downloadStream); //pass in remote file and stream
+            downloadStream.close();
+
+            if(success){
+                System.out.println("File has been successfully downloaded");
+                return true;
+            }
+            else{
+                System.out.println("Not quite right...");
+            }
+
+        }
+
+        catch (IOException e){
+            e.printStackTrace();
+        }
+        return false;
     }
 
 }

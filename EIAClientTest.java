@@ -18,4 +18,9 @@ public class EIAClientTest {
     public void testLs() throws Exception {
 
     }
+
+    @org.junit.Test
+    public void testDownload() throws Exception {
+
+    }
 }

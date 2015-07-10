@@ -190,7 +190,14 @@ public class EIAClient {
 
     }
 
-    //Get file from remove server
+    /**
+     * Get file from remove server
+     * Takes a string 'input' from the command line and downloads the specified remote file
+     * to the specified local destination using the syntax 'download <src file> <dest path new filename>
+     * Example usage (Mac): 'download 512KB.zip /Users/<username>/downloads/new.zip'
+     * @param input
+     * @return
+     */
     public boolean download (String[] input){
         try {
             if(!ftp.isConnected()){
@@ -229,7 +236,7 @@ public class EIAClient {
                 return true;
             }
             else{
-                System.out.println("Not quite right...");
+                System.out.println("File not downloaded.");
             }
 
         }

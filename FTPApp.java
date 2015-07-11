@@ -64,10 +64,13 @@ public class FTPApp {
         System.out.println("          Usage: connect <hostname> <port> <username> [password]");
         System.out.println("          Note: The password field is optional.");
         System.out.println("disconnect - Disconnect from the remote FTP host.");
+        System.out.println("upload - upload a single file to the FTP host.");
+        System.out.println("          Usage: upload <file name> <local file path>");
         System.out.println("");
         System.out.println("Local");
         System.out.println("ls - Displays the contents of the current local directory.");
         System.out.println("");
+
 
         return true;
     }

@@ -75,6 +75,11 @@ public class FTPApp {
         String save = "save - Saves a connection config." +
                 "\n          Usage: save <hostname> <port> <username> [password]" +
                 "\n          Note: The password field is optional.";
+        String delete = "delete - Deletes a saved connection." +
+                "\n          Usage: delete <saved connection>";
+        String list = "list - Lists available saved connections.";
+
+
         System.out.println("");
         System.out.println("Global");
         System.out.println("help - Displays this help text.");
@@ -94,6 +99,8 @@ public class FTPApp {
         System.out.println("Local");
         System.out.println("ls - Displays the contents of the current local directory.");
         System.out.println(save);
+        System.out.println(list);
+        System.out.println(delete);
         System.out.println("");
         return true;
     }

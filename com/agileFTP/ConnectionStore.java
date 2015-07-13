@@ -131,7 +131,6 @@ public class ConnectionStore {
                 toReturn[i] = temp[i - 1];
             }
             if(toReturn.length == 5) {
-                System.out.println("In pw section");
                 String password;
                 try{
                     password = new String(new sun.misc.BASE64Decoder().decodeBuffer(toReturn[4]));

@@ -9,7 +9,7 @@ import java.util.HashMap;
 
 
 // Class for all remote server tasks.
-public class EIAClient implements EIA {
+public class EIAClient implements com.agileFTP.EIA {
 
     private FTPClient ftp = new FTPClient();
     private String []input = null;
@@ -70,9 +70,6 @@ public class EIAClient implements EIA {
             commands.put("ls", () -> {
                 ls();
             });
-        }
-    
-
         } catch (NullPointerException e) {
             return false;
         }
@@ -86,7 +83,7 @@ public class EIAClient implements EIA {
         // This case is when the user types <connect> <name of saved connection>
         if(input.length == 2) {
             input = connectionStore.retrieveConnection(input[1]);
-            if(input == null) return; // Connection name wasn't found
+            if(input == null) return false; // Connection name wasn't found
         }
 
         if(input.length == 4) {
@@ -100,7 +97,7 @@ public class EIAClient implements EIA {
         else {
             System.out.println("Incorrect number of parameters for connect. Type 'help' for command syntax.");
         }
-
+        return true;
     }
 
 

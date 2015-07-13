@@ -1,4 +1,4 @@
-package src;
+package com.agileFTP;
 
 import java.io.*;
 import java.util.Arrays;
@@ -17,6 +17,7 @@ public class ConnectionStore {
         if(input.length == 6) {
             saveConnection(input[1], input[2], input[3], input[4], input[5]);
         }
+        System.out.println("Incorrect number of parameters for save. Type 'help' for command syntax.");
     }
 
     public void saveConnection(String connection, String host, String port, String name) {
@@ -25,6 +26,7 @@ public class ConnectionStore {
         connectionData.save(connection, host, port, name);
         storeConnections();
         connectionData = null;
+        System.out.println("Saved connection \'" + connection + "\'.");
     }
 
     public void saveConnection(String connection, String host, String port, String name, String password) {
@@ -33,6 +35,7 @@ public class ConnectionStore {
         connectionData.save(connection, host, port, name, password);
         storeConnections();
         connectionData = null;
+        System.out.println("Saved connection \'" + connection + "\'.");
     }
 
     public String[] retrieveConnection(String connection) {
@@ -47,7 +50,12 @@ public class ConnectionStore {
     private ConnectionData loadConnections() {
         try
         {
-            FileInputStream fileIn = new FileInputStream("/tmp/connections.ser");
+            char dirDivision = '/';
+            if(System.getProperty("os.name").toLowerCase().contains("windows")){
+                dirDivision = '\\';
+            }
+
+            FileInputStream fileIn = new FileInputStream(System.getProperty("user.home") + dirDivision + "connections.ser");
             ObjectInputStream objectIn = new ObjectInputStream(fileIn);
             ConnectionData connectionData = (ConnectionData) objectIn.readObject();
             objectIn.close();
@@ -55,7 +63,6 @@ public class ConnectionStore {
             return connectionData;
         }catch(IOException e)
         {
-            e.printStackTrace();
             return new ConnectionData();
         }catch(ClassNotFoundException e)
         {
@@ -68,14 +75,21 @@ public class ConnectionStore {
     private void storeConnections() {
       try
       {
-         FileOutputStream fileOut = new FileOutputStream("/tmp/connections.ser", false);
-         ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
-         objectOut.writeObject(this.connectionData);
-         objectOut.close();
-         fileOut.close();
+          char dirDivision = '/';
+          if(System.getProperty("os.name").toLowerCase().contains("windows")){
+              dirDivision = '\\';
+          }
+          File f = new File(System.getProperty("user.home") + dirDivision + "connections.ser");
+          if(!f.exists())
+              f.createNewFile();
+          FileOutputStream fileOut = new FileOutputStream(f);
+          ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
+          objectOut.writeObject(this.connectionData);
+          objectOut.close();
+          fileOut.close();
       }catch(IOException i)
       {
-          i.printStackTrace();
+          //i.printStackTrace();
       }
     }
 
@@ -107,7 +121,7 @@ public class ConnectionStore {
         public String [] retrieve(String connection) {
             String [] temp = connections.get(connection);
             if(temp == null) {
-                System.out.println("No connection with the name " + connection + " exists.");
+                System.out.println("No connection with the name \'" + connection + "\' exists.");
                 return null;
             }
             String [] toReturn = new String[temp.length + 1];

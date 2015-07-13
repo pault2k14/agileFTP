@@ -1,4 +1,4 @@
-package agileFTP;
+package com.agileFTP;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -8,37 +8,56 @@ import java.util.HashMap;
 import org.apache.commons.io.FileUtils;
 
 // Class for local machine based tasks.
-public class EIALocal {
+public class EIALocal implements EIA {
 
     private String []input = null;
     private File currentDirectory = FileUtils.getUserDirectory();
     private SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yy HH:mm:ss");
     private HashMap<String, Runnable> commands = new HashMap<String, Runnable>();
 
+    // Return the current local path variable.
     public String getPath() {
-        return FileUtils.getUserDirectory().getAbsolutePath();
+
+        return currentDirectory.getAbsolutePath();
     }
 
+   // Return the current local decorator variable.
+    public String getDecorator() {
+
+        return currentDirectory.getAbsolutePath();
+    }
 
     // Lookup the method in the hashmap and then execute the
     // corresponding method.
     public boolean execute(String []userInput) {
         input = userInput;
-        commands.get(input[0].toLowerCase()).run();
+
+        try {
+            commands.get(input[0].toLowerCase()).run();
+        } catch (NullPointerException e) {
+            System.out.println("Command not found, type 'help' for command syntax.\"");
+            return false;
+        }
+
         return true;
     }
 
     // Add all of the FTPApp's local haspmap into our hashmap.
     // Then load our local hashmap key's and lambda functions.
     public boolean init(HashMap main) {
-        commands.putAll(main);
-        commands.put("ls", () -> { ls(); } );
+        try {
+            commands.putAll(main);
+            commands.put("ls", () -> { ls(); } );
+        }
+        catch (NullPointerException e) {
+            return false;
+        }
 
         return true;
     }
 
     // Display the contents of the currentDirectory.
-    public boolean ls() {
+    protected boolean ls() {
 
         System.out.println("NAME  SIZE  LAST MODIFIED");
         System.out.println("-------------------------");
@@ -53,7 +72,7 @@ public class EIALocal {
             System.out.println("");
 
         } catch (NullPointerException e) {
-            e.printStackTrace();
+            System.out.println("Unable to display current directory.");
             return false;
         }
 

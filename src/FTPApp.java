@@ -1,4 +1,4 @@
-package src;
+package com.agileFTP;
 
 import java.util.*;
 
@@ -16,10 +16,11 @@ public class FTPApp {
 
     private EIAClient ftp = new EIAClient();
     private EIALocal local = new EIALocal();
+    private EIA inUseMode = null;
     private Scanner scan = new Scanner(System.in);
-    private String []input = null;
+    private String []input = new String[100];
     private boolean guard = true;
-    private String currentMode = "remote";
+    private String currentMode = null;
     private HashMap<String, Runnable> commands = new HashMap<String, Runnable>();
 
 
@@ -28,22 +29,44 @@ public class FTPApp {
 
         FTPApp App = new FTPApp();
         App.init();
-        App.scanInput();
+        App.start();
+
+    }
+
+    // Holds the user input loop.
+    public boolean start() {
+
+        while(guard) {
+            System.out.print(currentMode + ": " + inUseMode.getDecorator() + " > ");
+            input = scan.nextLine().split(" ");
+            execute(input);
+        }
+
+        return true;
 
     }
 
     // Setup hashmap, initialize ftp and local objects.
     public boolean init() {
 
-        commands.put("help", () -> { help();     });
-        commands.put("exit", () -> { guard = false;
-                                     System.exit(0);});
-        commands.put("mode", () -> { mode(input[1]); });
+        try {
+            commands.put("help", () -> { help();     });
+            commands.put("exit", () -> { exit();});
+            commands.put("mode", () -> { mode(input[1]); });
+        }
+
+        catch (NullPointerException e) {
+            System.out.println("Command not found, type 'help' for command syntax.\"");
+            return false;
+        }
 
         ftp.init(commands);
         local.init(commands);
 
+        mode("remote");
+
         System.out.println("Team Everything is Awesome presents: Awesome FTP!");
+
         return true;
     }
 
@@ -72,47 +95,53 @@ public class FTPApp {
         return true;
     }
 
-    // The main loop used to scan for user input.
-    public boolean scanInput() {
+    // Passes user commands from the FTPApp to the class currently in use.
+    public boolean execute(String []input) {
 
-        while(guard) {
-
-            try {
-
-                // If our mode is local send commands to EIALocal class object.
-                if (currentMode.equalsIgnoreCase("local")) {
-                    System.out.print("Local: " + local.getPath() + " > ");
-                    input = scan.nextLine().split(" ");
-                    local.execute(input);
-                }
-
-                // If our mode is remtoe send our commands to the EIAClient class object.
-                if (currentMode.equalsIgnoreCase("remote")) {
-                    System.out.print("Remote: " + ftp.getHost() + " > ");
-                    input = scan.nextLine().split(" ");
-                    ftp.execute(input);
-                }
-            } catch (NullPointerException | ArrayIndexOutOfBoundsException e) {
-                System.out.println("Command not found, type 'help' for command syntax.");
+        try {
+            if(inUseMode.execute(input)) {
+                return true;
             }
 
+            else {
+                return false;
+            }
 
+        } catch (NullPointerException | ArrayIndexOutOfBoundsException e) {
+            System.out.println("Command not found, type 'help' for command syntax.");
+            return false;
         }
 
-        return true;
-
     }
+
+    // Exit Awesome FTP.
+    public void exit() {
+
+        guard = false;
+        mode("remote");
+        input[0] = "disconnect";
+        inUseMode.execute(input);
+        System.exit(0);
+    }
+
 
     // Allows the user to switch the mode they are operating in, local or remote.
     public boolean mode(String choice) {
 
         if (choice.equalsIgnoreCase("remote")) {
-            currentMode = "remote";
+            currentMode = "Remote";
+            inUseMode = ftp;
 
         }
 
         else if (choice.equalsIgnoreCase("local")) {
-            currentMode = "local";
+            currentMode = "Local";
+            inUseMode = local;
+        }
+
+        else {
+            System.out.println("Unrecognized mode, Try 'mode local' or 'mode remote'.");
+            return false;
         }
 
         return true;

@@ -1,4 +1,4 @@
-package src;
+package com.agileFTP;
 
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
@@ -9,7 +9,7 @@ import java.util.HashMap;
 
 
 // Class for all remote server tasks.
-public class EIAClient {
+public class EIAClient implements EIA {
 
     private FTPClient ftp = new FTPClient();
     private String []input = null;
@@ -18,12 +18,17 @@ public class EIAClient {
 
     private ConnectionStore connectionStore = new ConnectionStore();
 
-
     // Looks up the users command in the remote hashmap
     // then runs the lambda function.
     public boolean execute(String []userInput) {
         input = userInput;
-        commands.get(input[0].toLowerCase()).run();
+
+        try {
+            commands.get(input[0].toLowerCase()).run();
+        } catch (NullPointerException e) {
+            System.out.println("Command not found, type 'help' for command syntax.\"");
+            return false;
+        }
 
         return true;
     }
@@ -34,24 +39,49 @@ public class EIAClient {
         return host;
     }
 
+    // Returns the remote decorator as a string.
+    public String getDecorator() {
+
+        return host;
+    }
+
 
     // Hashmap of the FTPApp is added to this hashmap
     // Then the remote hashmap is setup.
     public boolean init(HashMap main) {
 
-        commands.putAll(main);
-        commands.put("connect", () -> { connect(input); } );
-        commands.put("save", () -> { connectionStore.saveConnection(input); });
-        commands.put("list", () -> { connectionStore.listConnections(); });
-        commands.put("delete", () -> {connectionStore.deleteConnection(input); });
-        commands.put("disconnect", () -> {disconnect(); } );
-        commands.put("ls", () -> { ls(); } );
+        try {
+            commands.putAll(main);
+            commands.put("connect", () -> {
+                connect(input);
+            });
+            commands.put("save", () -> {
+                connectionStore.saveConnection(input);
+            });
+            commands.put("list", () -> {
+                connectionStore.listConnections();
+            });
+            commands.put("delete", () -> {
+                connectionStore.deleteConnection(input);
+            });
+            commands.put("disconnect", () -> {
+                disconnect();
+            });
+            commands.put("ls", () -> {
+                ls();
+            });
+        }
+    
+
+        } catch (NullPointerException e) {
+            return false;
+        }
 
         return true;
     }
 
     // Connect wrapper to determine if the user entered a password or not.
-    public void connect(String []input) {
+    protected boolean connect(String []input) {
 
         // This case is when the user types <connect> <name of saved connection>
         if(input.length == 2) {
@@ -60,11 +90,11 @@ public class EIAClient {
         }
 
         if(input.length == 4) {
-            connectNoPassword(input[1], input[2], input[3]);
+            connectToHost(input[1], input[2], input[3], "");
         }
 
         else if(input.length == 5) {
-            connectWithPassword(input[1], input[2], input[3], input[4]);
+            connectToHost(input[1], input[2], input[3], input[4]);
         }
 
         else {
@@ -82,36 +112,14 @@ public class EIAClient {
             return false;
         }
 
-
-        if (ftp.isConnected()) {
-            System.out.println("Already connected, disconnect first.");
-            return false;
-        }
-
-        try {
-            ftp.connect(userHost, Integer.parseInt(port));
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
-
-        try {
-            ftp.login(username, password);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
-
-        System.out.println("Connected to " + userHost);
-        host = userHost;
         return true;
     }
 
 
     // Connect to the remote server with a blank password.
-    public boolean connectNoPassword(String userHost, String port, String username) {
+    protected boolean connectToHost(String userHost, String port, String username, String password) {
 
-        if (userHost.equals(null) || port.equals(null) || username.equals(null)) {
+        if (userHost == null || port == null  || username == null || password == null) {
             System.out.println("Error: hostname, port, and username must be provided.");
             return false;
         }
@@ -124,45 +132,59 @@ public class EIAClient {
 
         try {
             ftp.connect(userHost, Integer.parseInt(port));
+
+            if(ftp.getReplyCode() != 220) {
+                System.out.println("Unable to connect to host.");
+                return false;
+            }
+
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Unable to connect, please check the host and port.");
             return false;
         }
 
         try {
-            ftp.login(username, "");
+            ftp.login(username, password);
+
+            if(ftp.getReplyCode() != 230) {
+                System.out.println("Unable to login, please check username and password.");
+                return false;
+            }
+
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Unable to login, please check username and password.");
             return false;
         }
 
         System.out.println("Connected to " + userHost);
         host = userHost;
+
         return true;
     }
 
     // Disconnect from the remote server.
-    public boolean disconnect() {
+    protected boolean disconnect() {
 
         if (!ftp.isConnected()) {
             System.out.println("Not connected.");
+            host = "Not connected";
             return false;
         }
 
         try {
             ftp.disconnect();
+
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("An error occurred when trying to disconnect.");
+            return false;
         }
 
-        System.out.println("Disconnected");
-        host = "Not connected";
         return true;
     }
 
 
     // Display the contents of the current remote directory.
-    public boolean ls() {
+    protected boolean ls() {
 
         FTPFile []directories = null;
         FTPFile []files = null;
@@ -175,18 +197,33 @@ public class EIAClient {
         try {
 
             directories = ftp.listDirectories();
+
+            if(ftp.getReplyCode() != 226) {
+                System.out.println("Unable to list current directory.");
+                return false;
+            }
+
             files = ftp.listFiles();
+
+            if(ftp.getReplyCode() != 226) {
+                System.out.println("Unable to list current directory.");
+                return false;
+            }
+
+            // Used in testing for this function.
+            System.out.println("Remote listing:");
 
             for(int i = 0; i < directories.length; ++i) {
                 System.out.println(directories[i]);
             }
 
             for(int i = 0; i < files.length; ++i) {
-                System.out.println(files[i].getName());
+                System.out.println(files[i].getRawListing() );
             }
 
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Unable to list current directory.");
+            return false;
         }
 
         return true;

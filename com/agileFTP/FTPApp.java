@@ -16,7 +16,7 @@ public class FTPApp {
 
     private EIAClient ftp = new EIAClient();
     private EIALocal local = new EIALocal();
-    private EIA inUseMode = null;
+    private com.agileFTP.EIA inUseMode = null;
     private Scanner scan = new Scanner(System.in);
     private String []input = new String[100];
     private boolean guard = true;
@@ -72,6 +72,13 @@ public class FTPApp {
 
     // Displays command syntax help.
     public boolean help() {
+        String save = "save - Saves a connection config." +
+                "\n          Usage: save <hostname> <port> <username> [password]" +
+                "\n          Note: The password field is optional.";
+        String delete = "delete - Deletes a saved connection." +
+                "\n          Usage: delete <saved connection>";
+        String list = "list - Lists available saved connections.";
+
 
         System.out.println("");
         System.out.println("Global");
@@ -83,15 +90,18 @@ public class FTPApp {
         System.out.println("");
         System.out.println("Remote");
         System.out.println("ls - Displays the contents of the current remote directory.");
-        System.out.println("connect - Connect to a remote FTP host.");
+        System.out.println("connect - Connect to a remote FTP host or saved connection.");
         System.out.println("          Usage: connect <hostname> <port> <username> [password]");
+        System.out.println("             or: connect <saved connection>");
         System.out.println("          Note: The password field is optional.");
         System.out.println("disconnect - Disconnect from the remote FTP host.");
         System.out.println("");
         System.out.println("Local");
         System.out.println("ls - Displays the contents of the current local directory.");
+        System.out.println(save);
+        System.out.println(list);
+        System.out.println(delete);
         System.out.println("");
-
         return true;
     }
 

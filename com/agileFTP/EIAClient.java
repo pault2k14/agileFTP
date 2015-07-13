@@ -9,13 +9,14 @@ import java.util.HashMap;
 
 
 // Class for all remote server tasks.
-public class EIAClient implements EIA {
+public class EIAClient implements com.agileFTP.EIA {
 
     private FTPClient ftp = new FTPClient();
     private String []input = null;
     private String host = "Not connected";
     private HashMap<String, Runnable> commands = new HashMap<String, Runnable>();
 
+    private ConnectionStore connectionStore = new ConnectionStore();
 
     // Looks up the users command in the remote hashmap
     // then runs the lambda function.
@@ -51,10 +52,24 @@ public class EIAClient implements EIA {
 
         try {
             commands.putAll(main);
-            commands.put("connect", () -> { connect(input); } );
-            commands.put("disconnect", () -> {disconnect(); } );
-            commands.put("ls", () -> { ls(); } );
-
+            commands.put("connect", () -> {
+                connect(input);
+            });
+            commands.put("save", () -> {
+                connectionStore.saveConnection(input);
+            });
+            commands.put("list", () -> {
+                connectionStore.listConnections();
+            });
+            commands.put("delete", () -> {
+                connectionStore.deleteConnection(input);
+            });
+            commands.put("disconnect", () -> {
+                disconnect();
+            });
+            commands.put("ls", () -> {
+                ls();
+            });
         } catch (NullPointerException e) {
             return false;
         }
@@ -62,9 +77,14 @@ public class EIAClient implements EIA {
         return true;
     }
 
-
     // Connect wrapper to determine if the user entered a password or not.
     protected boolean connect(String []input) {
+
+        // This case is when the user types <connect> <name of saved connection>
+        if(input.length == 2) {
+            input = connectionStore.retrieveConnection(input[1]);
+            if(input == null) return false; // Connection name wasn't found
+        }
 
         if(input.length == 4) {
             connectToHost(input[1], input[2], input[3], "");
@@ -76,6 +96,16 @@ public class EIAClient implements EIA {
 
         else {
             System.out.println("Incorrect number of parameters for connect. Type 'help' for command syntax.");
+        }
+        return true;
+    }
+
+
+    // Connect to the remote server with a password.
+    public boolean connectWithPassword(String userHost, String port, String username, String password) {
+
+        if (userHost.equals(null) || port.equals(null) || username.equals(null) || password.equals(null)) {
+            System.out.println("Error: hostname, port, username, and password must be provided.");
             return false;
         }
 

@@ -26,14 +26,13 @@ public class WorkingIndicator extends Thread {
         Thread thisThread = Thread.currentThread();
         indicator = Thread.currentThread();
         while(indicator == thisThread) {
+            index %= scenes.length;
+            System.out.print(scenes[index++] + '\r');
             try {
                 Thread.sleep(300);
             } catch (InterruptedException e){
-                System.out.print("Done!");
                 return;
             }
-            index %= scenes.length;
-            System.out.print(scenes[index++] + '\r');
         }
     }
 

@@ -231,8 +231,8 @@ public class EIAClient implements com.agileFTP.EIA {
     /**
      * Get file from remove server
      * Takes a string 'input' from the command line and downloads the specified remote file
-     * to the specified local destination using the syntax 'download <src file> <dest path new filename>
-     * Example usage (Mac): 'download 512KB.zip /Users/<username>/downloads/new.zip'
+     * to the specified local destination using the syntax 'download <src file> <new local file>
+     * Example usage: 'download 512KB.zip newlocalfile.zip'
      * @param input
      * @return
      */
@@ -268,11 +268,13 @@ public class EIAClient implements com.agileFTP.EIA {
         }
         */
 
-
+            WorkingIndicator progress = new WorkingIndicator();
+            progress.start();
             File downloaded = new File (PathHelper.getDownloadsPath()+input[2]);  //create local file
             OutputStream downloadStream = new BufferedOutputStream(new FileOutputStream(downloaded));
             boolean success = ftp.retrieveFile(input[1], downloadStream); //pass in remote file and stream
             downloadStream.close();
+            progress.terminate();
 
             if(success){
                 System.out.println("File has been successfully downloaded");

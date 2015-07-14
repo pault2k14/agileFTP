@@ -29,7 +29,8 @@ public class WorkingIndicator extends Thread {
             try {
                 Thread.sleep(300);
             } catch (InterruptedException e){
-                System.out.println("Done!");
+                System.out.print("Done!");
+                return;
             }
             index %= scenes.length;
             System.out.print(scenes[index++] + '\r');

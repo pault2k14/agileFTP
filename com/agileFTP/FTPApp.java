@@ -95,6 +95,8 @@ public class FTPApp {
         System.out.println("             or: connect <saved connection>");
         System.out.println("          Note: The password field is optional.");
         System.out.println("disconnect - Disconnect from the remote FTP host.");
+        System.out.println("download - Download a single file from the FTP host.");
+        System.out.println("          Usage: download <remote file name> <new local file name>");
         System.out.println("");
         System.out.println("Local");
         System.out.println("ls - Displays the contents of the current local directory.");

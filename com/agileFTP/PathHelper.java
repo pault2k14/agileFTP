@@ -29,7 +29,8 @@ public class PathHelper {
         char delimiter = getDelimiter();
         String path = System.getProperty("user.home")
                 + delimiter
-                + "Downloads";
+                + "Downloads"
+                + delimiter;
         return path;
     }
 
@@ -40,6 +41,7 @@ public class PathHelper {
             path += delimiter;
             path += component;
         }
+        path += delimiter;
         return path;
     }
 }

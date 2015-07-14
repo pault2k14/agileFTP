@@ -269,7 +269,7 @@ public class EIAClient implements com.agileFTP.EIA {
         */
 
 
-            File downloaded = new File (input[2]);  //create local file
+            File downloaded = new File (PathHelper.getDownloadsPath()+input[2]);  //create local file
             OutputStream downloadStream = new BufferedOutputStream(new FileOutputStream(downloaded));
             boolean success = ftp.retrieveFile(input[1], downloadStream); //pass in remote file and stream
             downloadStream.close();

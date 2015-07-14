@@ -1,9 +1,7 @@
 package agileFTP;
 
-import org.apache.commons.net.ftp.FTP;
-import org.apache.commons.net.ftp.FTPClient;
-import org.apache.commons.net.ftp.FTPClientConfig;
-import org.apache.commons.net.ftp.FTPFile;
+import org.apache.commons.net.ftp.*;
+import org.apache.commons.net.io.CopyStreamException;
 
 import java.io.*;
 import java.io.IOException;
@@ -241,8 +239,9 @@ public class EIAClient {
         }
 
         catch (IOException e){
-            e.printStackTrace();
+            System.out.println("No destination file specified.");
         }
+
         return false;
     }
 }

@@ -114,11 +114,9 @@ public class FTPApp {
     public boolean execute(String []input) {
 
         try {
-            if(inUseMode.execute(input)) {
+            if (inUseMode.execute(input)) {
                 return true;
-            }
-
-            else {
+            } else {
                 return false;
             }
 
@@ -127,8 +125,7 @@ public class FTPApp {
             return false;
         }
 
-        return true;
-
+    }
     // Exit Awesome FTP.
     public void exit() {
 

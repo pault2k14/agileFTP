@@ -1,15 +1,23 @@
 package com.agileFTP;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPClientConfig;
 import org.apache.commons.net.ftp.FTPFile;
+import sun.nio.ch.IOUtil;
+import sun.util.logging.PlatformLogger;
+
 import java.io.*;
 import java.util.HashMap;
-
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 // Class for all remote server tasks.
 public class EIAClient implements com.agileFTP.EIA {
+
+    //to log exceptions
+    private static final Logger logger = Logger.getLogger(EIAClient.class.getName());
 
     private FTPClient ftp = new FTPClient();
     private String []input = null;
@@ -237,6 +245,9 @@ public class EIAClient implements com.agileFTP.EIA {
      * @return
      */
     public boolean download (String[] input){
+        //declare OutputStream outside try block so it's in scope for error handling
+        OutputStream downloadStream = null;
+
         try {
             if(!ftp.isConnected()){
                 System.out.println("Not connected.");
@@ -271,23 +282,30 @@ public class EIAClient implements com.agileFTP.EIA {
             WorkingIndicator progress = new WorkingIndicator();
             progress.start();
             File downloaded = new File (PathHelper.getDownloadsPath()+input[2]);  //create local file
-            OutputStream downloadStream = new BufferedOutputStream(new FileOutputStream(downloaded));
+            downloadStream = new BufferedOutputStream(new FileOutputStream(downloaded));
             boolean success = ftp.retrieveFile(input[1], downloadStream); //pass in remote file and stream
-            downloadStream.close();
             progress.terminate();
+
+            try{
+                downloadStream.close();
+            } catch(IOException e){
+                logger.log(Level.SEVERE, "Download stream failed to close.", e);
+            }
 
             if(success){
                 System.out.println("File has been successfully downloaded");
                 return true;
-            }
-            else{
+            } else{
                 System.out.println("File not downloaded.");
             }
 
         }
-
         catch (IOException e){
             System.out.println("No destination file specified.");
+        }
+        //close download stream if it never closed in the try block
+        finally{
+            IOUtils.closeQuietly(downloadStream);
         }
         return false;
     }

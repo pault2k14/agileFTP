@@ -270,16 +270,21 @@ public class EIAClient implements com.agileFTP.EIA {
          * This is now commented out because it works without setting to passive mode/binary file type.
          * If we run into problems after adding more functionality, we can restore it.
          */
-        /*
-        ftp.enterLocalPassiveMode();
+
+        /*ftp.enterLocalPassiveMode();
         try {
             ftp.setFileType(FTP.BINARY_FILE_TYPE);
         } catch (IOException e) {
             e.printStackTrace();
-        }
-        */
+        }*/
 
-            WorkingIndicator progress = new WorkingIndicator();
+            long fileSize = -1;
+            FTPFile[] files = ftp.listFiles(input[1]);
+            if (files.length == 1 && files[0].isFile()) {
+                fileSize = files[0].getSize();
+            }
+
+            WorkingIndicator progress = new WorkingIndicator(ftp, fileSize);
             progress.start();
             File downloaded = new File (PathHelper.getDownloadsPath()+input[2]);  //create local file
             downloadStream = new BufferedOutputStream(new FileOutputStream(downloaded));

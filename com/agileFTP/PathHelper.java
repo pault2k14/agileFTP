@@ -1,8 +1,5 @@
 package com.agileFTP;
 
-/**
- * Created by requi_000 on 7/13/2015.
- */
 public class PathHelper {
     public static String os;
 

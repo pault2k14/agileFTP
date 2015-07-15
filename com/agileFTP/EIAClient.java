@@ -278,7 +278,7 @@ public class EIAClient implements com.agileFTP.EIA {
             e.printStackTrace();
         }*/
 
-            long fileSize = -1;
+            long fileSize = 0;
             FTPFile[] files = ftp.listFiles(input[1]);
             if (files.length == 1 && files[0].isFile()) {
                 fileSize = files[0].getSize();

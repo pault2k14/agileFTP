@@ -70,6 +70,113 @@ public class FTPApp {
         return true;
     }
 
+
+    // Splits a user's input by spaces, but keeps
+    // input surrounded by quotes as one unit.
+    public String[] split(String input) {
+
+        char[] userInput = null;
+        String[] inputArray = new String[100];
+        String[] cleanedArray = null;
+        List<String> stockList = new ArrayList<String>();
+        boolean firstQuote = false;
+        int y = 0;
+        int i = 0;
+
+        if(input == null || input == "") {
+
+            cleanedArray = new String[1];
+            cleanedArray[0] = "";
+            return cleanedArray;
+        }
+
+        userInput = input.trim().toCharArray();
+
+        while(i < userInput.length) {
+
+            // If it's the first quote, ignore the
+            // character.
+            if(userInput[i] == '"' && !firstQuote) {
+
+                firstQuote = true;
+                ++i;
+            }
+
+            // Also ignore if it is the second quote.
+            else if(userInput[i] == '"' && firstQuote) {
+
+                firstQuote = false;
+                ++i;
+            }
+
+            // If we are inside of a quote then add the space into
+            // the current index.
+            else if(userInput[i] == ' ' && firstQuote) {
+
+                if(inputArray[y] == null) {
+                    inputArray[y] = String.valueOf(userInput[i]);
+                }
+
+                else {
+                    inputArray[y] = inputArray[y].concat(String.valueOf(userInput[i]));
+                }
+
+                ++i;
+            }
+
+            // If we are not inside of a quote then skip past this
+            // and any following spaces and then increment the inputArray
+            // as the current keyword has been completed.
+            else if(userInput[i] == ' ' && !firstQuote) {
+
+                // Go past any spaces outside of quotes.
+                while(userInput[i] == ' ') {
+                    ++i;
+                }
+
+                // Increment the currently being constructed inputArray.
+                ++y;
+            }
+
+            // In this case just add characters to the
+            // inputArray and then increment only the userInput array.
+            else {
+
+                if(inputArray[y] == null) {
+                    inputArray[y] = String.valueOf(userInput[i]);
+                }
+
+                else {
+                    inputArray[y] = inputArray[y].concat(String.valueOf(userInput[i]));
+                }
+
+                ++i;
+            }
+
+        }
+
+        // Count the number of elements in our new that are not null.
+        for(i = 0, y = 0; i < inputArray.length ; ++i) {
+
+            if(inputArray[i] != null) {
+                ++y;
+            }
+        }
+
+        // Create an array with the size of non-null elements in
+        // in the inputArray.
+        cleanedArray = new String[y];
+
+        // Copy the non-null elements into our cleaned array.
+        for(i = 0; i < y; ++i) {
+
+            cleanedArray[i] = inputArray[i];
+        }
+
+        return cleanedArray;
+    }
+
+
     // Displays command syntax help.
     public boolean help() {
         String save = "save - Saves a connection config." +

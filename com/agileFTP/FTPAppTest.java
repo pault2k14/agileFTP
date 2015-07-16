@@ -78,4 +78,26 @@ public class FTPAppTest {
     }
 
 
+    @Test
+    public void testSplit() throws Exception {
+
+        String input = "  get multiple    \"/opt/nas/black hat/the blackhat\" \"/opt/nas/whitehat\"  ";
+        userInput = App.split(input);
+        assertEquals(4, userInput.length);
+
+        for(int i = 0; i < userInput.length; ++i) {
+            System.out.println(userInput[i]);
+        }
+
+        input = "";
+        userInput = App.split(input);
+        assertEquals(1, userInput.length);
+
+        input = null;
+        userInput = App.split(input);
+        assertEquals(1, userInput.length);
+
+    }
+
+
 }

@@ -9,6 +9,7 @@ import sun.nio.ch.IOUtil;
 import sun.util.logging.PlatformLogger;
 
 import java.io.*;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -79,6 +80,7 @@ public class EIAClient implements com.agileFTP.EIA {
                 ls();
             });
             commands.put("download", () -> { download(input); });
+            commands.put("upload", () -> { upload(input); });
         } catch (NullPointerException e) {
             return false;
         }
@@ -86,8 +88,15 @@ public class EIAClient implements com.agileFTP.EIA {
         return true;
     }
 
+
+
+
     // Connect wrapper to determine if the user entered a password or not.
     protected boolean connect(String []input) {
+
+        if(input == null) {
+            return false;
+        }
 
         // This case is when the user types <connect> <name of saved connection>
         if(input.length == 2) {
@@ -110,19 +119,7 @@ public class EIAClient implements com.agileFTP.EIA {
     }
 
 
-    // Connect to the remote server with a password.
-    public boolean connectWithPassword(String userHost, String port, String username, String password) {
-
-        if (userHost.equals(null) || port.equals(null) || username.equals(null) || password.equals(null)) {
-            System.out.println("Error: hostname, port, username, and password must be provided.");
-            return false;
-        }
-
-        return true;
-    }
-
-
-    // Connect to the remote server with a blank password.
+    // Connect to the remote server
     protected boolean connectToHost(String userHost, String port, String username, String password) {
 
         if (userHost == null || port == null  || username == null || password == null) {
@@ -236,6 +233,140 @@ public class EIAClient implements com.agileFTP.EIA {
 
     }
 
+    // Wrapper function for file uploading.
+    public boolean upload(String[] userInput) {
+
+        String[] uploadArray = null;
+
+        if(!ftp.isConnected()){
+            System.out.println("Not connected.");
+            return false;
+        }
+
+        if(userInput == null) {
+            System.out.println("User input was null!");
+            return false;
+        }
+
+        if(userInput.length == 1) {
+            System.out.println("No file specified for upload.  Type 'help' for command syntax.");
+            return false;
+        }
+
+        // User has not completed a valid upload string.
+        if((userInput.length % 2) != 1) {
+            System.out.println("Incorrect number of parameters for upload.  Type 'help' for command syntax.");
+            return false;
+        }
+
+        for(int i = 1; i < userInput.length; i += 2) {
+
+            uploadArray = new String[3];
+            uploadArray[0] = "";
+            uploadArray[1] = userInput[i];
+            uploadArray[2] = userInput[i + 1];
+            uploadToHost(uploadArray);
+        }
+
+        return true;
+    }
+
+
+    /**
+     * Upload file to remove server
+     * Takes a string 'input' from the command line and uploads the specified local file
+     * to the connected remote ftp server using the syntax 'upload <filename> <local filepath>
+     * Example usage (Mac): 'upload upload.txt /Users/<username>/Desktop/upload.txt'
+     * NOTE: if using speedtest.tele2.net the filename must include the directory name: "upload/upload.txt"
+     *
+     * @param input
+     * @return boolean
+     */
+    public boolean uploadToHost (String[] input){
+        try {
+            if(!ftp.isConnected()){
+                System.out.println("Not connected.");
+                return false;
+            }
+
+            if(input.length != 3){
+                System.out.println("Incorrect number of parameters for upload.  Type 'help' for command syntax.");
+                return false;
+            }
+
+            // Enter Local Passive mode to switch data connection mode from server-to-client (default mode) to client-to-server
+            // and to get through firewall and avoid potential connection issues
+            /**
+             * According to the API docs:
+             * The FTPClient will stay in PASSIVE_LOCAL_DATA_CONNECTION_MODE until the mode is changed
+             * by calling some other method such as enterLocalActiveMode()
+             * However: currently calling any connect method will reset the mode to ACTIVE_LOCAL_DATA_CONNECTION_MODE.
+             */
+/*            ftp.enterLocalPassiveMode();
+            try {
+                ftp.setFileType(FTP.BINARY_FILE_TYPE);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }*/
+
+            File uploaded = new File (input[2]);  //create remote file
+
+            InputStream inputStream = new FileInputStream(uploaded);
+            boolean success = ftp.storeFile(input[1], inputStream);
+            inputStream.close();
+            if (success) {
+                System.out.println("The file uploaded successfully.");
+            } else {
+                System.out.println("Not quite right...");
+            }
+
+        }
+
+        catch (IOException e){
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+
+    // Wrapper function for download.
+    public boolean download(String[] userInput) {
+
+        String[] downloadArray = null;
+
+        if(!ftp.isConnected()){
+            System.out.println("Not connected.");
+            return false;
+        }
+
+        if(userInput == null) {
+            System.out.println("User input was null!");
+            return false;
+        }
+
+        if(userInput.length == 1) {
+            System.out.println("No file specified for download.  Type 'help' for command syntax.");
+            return false;
+        }
+
+        // User has not completed a valid upload string.
+        if((userInput.length % 2) != 1) {
+            System.out.println("Incorrect number of parameters for download.  Type 'help' for command syntax.");
+            return false;
+        }
+
+        for(int i = 1; i < userInput.length; i += 2) {
+
+            downloadArray = new String[3];
+            downloadArray[0] = "";
+            downloadArray[1] = userInput[i];
+            downloadArray[2] = userInput[i + 1];
+            downloadFromHost(downloadArray);
+        }
+
+        return true;
+    }
+
     /**
      * Get file from remove server
      * Takes a string 'input' from the command line and downloads the specified remote file
@@ -244,7 +375,7 @@ public class EIAClient implements com.agileFTP.EIA {
      * @param input
      * @return
      */
-    public boolean download (String[] input){
+    public boolean downloadFromHost (String[] input){
         //declare OutputStream outside try block so it's in scope for error handling
         OutputStream downloadStream = null;
 

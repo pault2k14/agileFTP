@@ -204,6 +204,8 @@ public class FTPApp {
         System.out.println("disconnect - Disconnect from the remote FTP host.");
         System.out.println("download - Download a single file from the FTP host.");
         System.out.println("          Usage: download <remote file name> <new local file name>");
+        System.out.println("upload - upload a single file to the FTP host.");
+        System.out.println("          Usage: upload <file name> <local file path>");
         System.out.println("");
         System.out.println("Local");
         System.out.println("ls - Displays the contents of the current local directory.");
@@ -211,6 +213,7 @@ public class FTPApp {
         System.out.println(list);
         System.out.println(delete);
         System.out.println("");
+
         return true;
     }
 
@@ -218,11 +221,9 @@ public class FTPApp {
     public boolean execute(String []input) {
 
         try {
-            if(inUseMode.execute(input)) {
+            if (inUseMode.execute(input)) {
                 return true;
-            }
-
-            else {
+            } else {
                 return false;
             }
 
@@ -232,7 +233,6 @@ public class FTPApp {
         }
 
     }
-
     // Exit Awesome FTP.
     public void exit() {
 

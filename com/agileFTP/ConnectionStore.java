@@ -62,7 +62,7 @@ public class ConnectionStore {
 
     public void deleteConnection(String [] connection) {
         if(connection.length != 2) {
-            System.out.println("Incorrect number of parameters for save. Type 'help' for command syntax.");
+            System.out.println("Incorrect number of parameters for delete. Type 'help' for command syntax.");
             return;
         }
         start();

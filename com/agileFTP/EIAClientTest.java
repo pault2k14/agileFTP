@@ -225,7 +225,7 @@ public class EIAClientTest {
         userInput = "connect speedtest.tele2.net 21 Anonymous".split(" ");
         ftp.execute(userInput);
 
-        userInput = "download 512KB.zip localtest.zip".split(" ");
+        userInput = "download 5MB.zip localtest.zip".split(" ");
         assertEquals(true, ftp.download(userInput));
 
         userInput = "disconnect".split(" ");

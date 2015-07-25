@@ -218,4 +218,101 @@ public class EIAClientTest {
         userInput = "disconnect".split(" ");
         ftp.execute(userInput);
     }
+
+    @Test
+    public void testMkDirGood() throws Exception {
+        ftp.init(testCommands);
+        userInput = "connect speedtest.tele2.net 21 Anonymous".split(" ");
+        ftp.execute(userInput);
+
+        userInput = "mkdir testDirectory".split(" ");
+        assertTrue(ftp.execute(userInput));
+    }
+
+    @Test
+    public void testRmDirGood() throws Exception {
+        ftp.init(testCommands);
+        userInput = "connect speedtest.tele2.net 21 Anonymous".split(" ");
+        ftp.execute(userInput);
+
+        userInput = "rmdir testDirectory".split(" ");
+        assertTrue(ftp.execute(userInput));
+    }
+
+
+    @Test
+    public void testCd() throws Exception {
+        ftp.init(testCommands);
+        userInput = "connect speedtest.tele2.net 21 Anonymous".split(" ");
+        ftp.execute(userInput);
+
+        userInput = "cd upload".split(" ");
+        assertTrue(ftp.execute(userInput));
+
+        // List directory contents and confirm upload empty except "Remote listing:"
+        PrintStream stdout = System.out;
+        final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+
+        System.setOut(new PrintStream(outContent));
+
+        assertTrue(ftp.ls());
+        result = outContent.toString().contentEquals("Remote listing:" + "\n");
+
+        System.setOut(stdout);
+
+        assertTrue(result);
+
+        userInput = "disconnect".split(" ");
+        ftp.execute(userInput);
+    }
+
+
+    @Test
+    public void testCdDotDot() throws Exception {
+        ftp.init(testCommands);
+        userInput = "connect speedtest.tele2.net 21 Anonymous".split(" ");
+        ftp.execute(userInput);
+
+        // cd to upload directory
+        userInput = "cd upload".split(" ");
+        assertTrue(ftp.execute(userInput));
+
+        // cd back to base directory to test cd ..
+        userInput = "cd ..".split(" ");
+        assertTrue(ftp.execute(userInput));
+
+
+        // List directory contents and confirm base directory contains file "1MB.zip"
+        PrintStream stdout = System.out;
+        final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+
+        System.setOut(new PrintStream(outContent));
+
+        assertTrue(ftp.ls());
+        result = outContent.toString().contains("Remote listing:" + "\n");
+        assertTrue(result);
+        result = outContent.toString().contains("1MB.zip");
+        assertTrue(result);
+
+        System.setOut(stdout);
+    }
+
+    /**
+     * speedtest.tele2.net immediately removes any created/deleted files.
+     * Unable to test rmdir until we have a fully operational FTP server
+     * (hopefully provided by professor?)
+     */
+    /*
+    @Test
+    public void testRmDirGood() throws Exception {
+        ftp.init(testCommands);
+        userInput = "connect speedtest.tele2.net 21 Anonymous".split(" ");
+        ftp.execute(userInput);
+
+        assertTrue(ftp.mkdir("rmdir testDirectory".split(" ")));
+
+        userInput = "disconnect".split(" ");
+        ftp.execute(userInput);
+    }
+    */
 }

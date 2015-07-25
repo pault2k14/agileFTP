@@ -1,10 +1,7 @@
 package com.agileFTP;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.net.ftp.FTP;
-import org.apache.commons.net.ftp.FTPClient;
-import org.apache.commons.net.ftp.FTPClientConfig;
-import org.apache.commons.net.ftp.FTPFile;
+import org.apache.commons.net.ftp.*;
 import sun.nio.ch.IOUtil;
 import sun.util.logging.PlatformLogger;
 
@@ -81,6 +78,19 @@ public class EIAClient implements com.agileFTP.EIA {
             });
             commands.put("download", () -> { download(input); });
             commands.put("upload", () -> { upload(input); });
+            commands.put("mkdir", () -> {
+                mkdir(input);
+            });
+            commands.put("rmdir", () -> {
+                rmdir(input);
+            });
+            commands.put("cd", () -> {
+                cd(input);
+            });
+            commands.put("cd ..", () -> {
+                cdParent();
+            });
+
         } catch (NullPointerException e) {
             return false;
         }
@@ -376,5 +386,91 @@ public class EIAClient implements com.agileFTP.EIA {
         }
         return false;
     }
+
+    // Make a directory on remote server
+    public boolean mkdir(String [] input) {
+        try {
+
+            if (!ftp.isConnected()) {
+                System.out.println("Not connected.");
+                return false;
+            }
+            if (input.length != 2) {
+                System.out.println("Incorrect number of parameters for mkdir. Type 'help' for command syntax.");
+            }
+            return ftp.makeDirectory(input[1]);
+        }
+
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    // Delete a directory on remote server
+    public boolean rmdir(String [] input) {
+        try {
+
+            if (!ftp.isConnected()) {
+                System.out.println("Not connected.");
+                return false;
+            }
+            if (input.length != 2) {
+                System.out.println("Incorrect number of parameters for rmdir. Type 'help' for command syntax.");
+            }
+
+            return ftp.removeDirectory(input[1]);
+
+        }
+
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    // Change directory on remote server (cd command)
+    public boolean cd(String [] input) {
+        try {
+
+            if (!ftp.isConnected()) {
+                System.out.println("Not connected.");
+                return false;
+            }
+            if (input.length != 2) {
+                System.out.println("Incorrect number of parameters for cd. Type 'help' for command syntax.");
+            }
+
+            return ftp.changeWorkingDirectory(input[1]);
+
+        }
+
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    // Change to parent directory on remote server ("cd .." command)
+    public boolean cdParent() {
+        try {
+            if (!ftp.isConnected()) {
+                System.out.println("Not connected.");
+                return false;
+            }
+            if (input.length != 2) {
+                System.out.println("Incorrect number of parameters for cd. Type 'help' for command syntax.");
+            }
+
+            return ftp.changeToParentDirectory();
+
+        }
+
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
 
 }

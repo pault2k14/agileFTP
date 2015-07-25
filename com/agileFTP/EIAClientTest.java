@@ -2,7 +2,8 @@ package com.agileFTP;
 
 import org.junit.Test;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.util.HashMap;
 
 import static org.junit.Assert.*;
@@ -216,17 +217,5 @@ public class EIAClientTest {
 
         userInput = "disconnect".split(" ");
         ftp.execute(userInput);
-    }
-
-    @Test
-    public void testDownload() throws Exception {
-
-        ftp.init(testCommands);
-        String[] userConnect;
-        userConnect = "connect speedtest.tele2.net 21 Anonymous".split(" ");
-        ftp.connect(userConnect);
-
-        userInput = "download 512KB.zip localtest.zip".split(" ");
-        assertEquals(true, ftp.download(userInput));
     }
 }

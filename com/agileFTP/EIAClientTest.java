@@ -10,7 +10,7 @@ import static org.junit.Assert.*;
 public class EIAClientTest {
 
     private EIAClient ftp = new EIAClient();
-    private String []userInput = new String[100];
+    private String[] userInput = new String[100];
     private boolean result;
     private String testHost = null;
     private String testDecorator = null;
@@ -230,5 +230,20 @@ public class EIAClientTest {
 
         userInput = "disconnect".split(" ");
         ftp.execute(userInput);
+    }
+
+    @Test
+    public void testUpload() throws Exception {
+
+        ftp.init(testCommands);
+        userInput = "connect speedtest.tele2.net 21 Anonymous".split(" ");
+        ftp.execute(userInput);
+
+        userInput = "upload upload/upload.txt C:\\Users\\Mark\\Documents\\GitHub\\agileFTP\\upload.txt".split(" ");
+        assertEquals(true, ftp.upload(userInput));
+
+        userInput = "disconnect".split(" ");
+        ftp.execute(userInput);
+
     }
 }

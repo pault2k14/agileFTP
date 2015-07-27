@@ -42,7 +42,7 @@ public class FTPAppTest {
     public void testExecuteGood() throws Exception {
 
         App.init();
-        userInput = "help".split(" ");
+        userInput = FTPApp.split("help");
         assertTrue(App.execute(userInput));
     }
 
@@ -50,7 +50,7 @@ public class FTPAppTest {
     public void testExecuteBad() throws Exception {
 
         App.init();
-        userInput = "badtest".split(" ");
+        userInput = FTPApp.split("badtest");
         assertFalse(App.execute(userInput));
     }
 
@@ -59,10 +59,10 @@ public class FTPAppTest {
 
         App.init();
 
-        userInput = "mode local".split(" ");
+        userInput = FTPApp.split("mode local");
         assertTrue(App.mode(userInput[1]));
 
-        userInput = "mode remote".split(" ");
+        userInput = FTPApp.split("mode remote");
         assertTrue(App.mode(userInput[1]));
 
     }
@@ -72,7 +72,7 @@ public class FTPAppTest {
 
         App.init();
 
-        userInput = "mode badTest".split(" ");
+        userInput = FTPApp.split("mode badTest");
         assertFalse(App.mode(userInput[1]));
 
     }
@@ -82,7 +82,7 @@ public class FTPAppTest {
     public void testSplit() throws Exception {
 
         String input = "  get multiple    \"/opt/nas/black hat/the blackhat\" \"/opt/nas/whitehat\"  ";
-        userInput = App.split(input);
+        userInput = FTPApp.split(input);
         assertEquals(4, userInput.length);
 
         for(int i = 0; i < userInput.length; ++i) {
@@ -90,11 +90,11 @@ public class FTPAppTest {
         }
 
         input = "";
-        userInput = App.split(input);
+        userInput = FTPApp.split(input);
         assertEquals(1, userInput.length);
 
         input = null;
-        userInput = App.split(input);
+        userInput = FTPApp.split(input);
         assertEquals(1, userInput.length);
 
     }

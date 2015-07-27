@@ -90,6 +90,9 @@ public class EIAClient implements com.agileFTP.EIA {
             commands.put("cd ..", () -> {
                 cdParent();
             });
+            commands.put("pwd", () -> {
+                pwd();
+            });
 
         } catch (NullPointerException e) {
             return false;
@@ -387,8 +390,103 @@ public class EIAClient implements com.agileFTP.EIA {
         return false;
     }
 
-    // Make a directory on remote server
+
+    /**
+     * Change directory on remote server (cd command)
+     * @param input The name of the directory to cd to.  Either full path or relative to current
+     * @return true if successful
+     */
+    public boolean cd(String [] input) {
+        boolean result = false;
+        try {
+
+            if (!ftp.isConnected()) {
+                System.out.println("Not connected.");
+                return false;
+            }
+            if (input.length != 2) {
+                System.out.println("Incorrect number of parameters for cd. Type 'help' for command syntax.");
+            }
+
+            result = ftp.changeWorkingDirectory(input[1]);
+            if (result == false) {
+                System.out.println("Unable to change to specified directory on remote server.");
+            }
+            return result;
+        }
+
+        catch (IOException e) {
+            System.out.println("Unable to change to specified directory on remote server.  " +
+                    "Error communicating with remote server.");
+            return false;
+        }
+    }
+
+    /**
+     * Change the parent directory on remote server ("cd .." command)
+     * @return true if successful
+     */
+    public boolean cdParent() {
+        boolean result = false;
+        try {
+            if (!ftp.isConnected()) {
+                System.out.println("Not connected.");
+                return false;
+            }
+
+            result = ftp.changeToParentDirectory();
+            if (result == false) {
+                System.out.println("Unable to change to parent directory on remote server.");
+            }
+            return result;
+        }
+
+        catch (IOException e) {
+            System.out.println("Unable to change to parent directory on remote server.)" +
+                    "  Error communicating with remote server.");
+            return false;
+        }
+    }
+
+    /**
+     * Print working directory on remote server
+     * Directory string is printed to System.out, as well as returned
+     * @return String of the current working directory
+     *         or null if unsuccessful
+     */
+
+    public String pwd() {
+        String directoryName = null;
+        boolean result = false;
+        try {
+            if (!ftp.isConnected()) {
+                System.out.println("Not connected.");
+                return null;
+            }
+
+            directoryName = ftp.printWorkingDirectory();
+            if (directoryName != null) {
+                System.out.println(directoryName);
+                return directoryName;
+            }
+            System.out.println("Unable to determine working directory on remote server.");
+            return null;
+        }
+
+        catch (IOException e) {
+            System.out.println("Unable to determine working directory on remote server.)" +
+                    "  Error communicating with remote server.");
+            return null;
+        }
+    }
+
+    /**
+     * Make a directory on remote server
+     * @param input The name of the directory to make
+     * @return true if successful
+     */
     public boolean mkdir(String [] input) {
+        boolean result = false;
         try {
 
             if (!ftp.isConnected()) {
@@ -398,17 +496,27 @@ public class EIAClient implements com.agileFTP.EIA {
             if (input.length != 2) {
                 System.out.println("Incorrect number of parameters for mkdir. Type 'help' for command syntax.");
             }
-            return ftp.makeDirectory(input[1]);
+            result = ftp.makeDirectory(input[1]);
+            if (result == false) {
+                System.out.println("Unable to make specified directory on remote server.");
+            }
+            return result;
         }
 
         catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Unable to make specified directory on remote server.  " +
+                    "Error communicating with remote server.");
+            return false;
         }
-        return false;
     }
 
-    // Delete a directory on remote server
+    /**
+     * Delete a directory on remote server
+     * @param input The name of the directory to remove.
+     * @return true if successful
+     */
     public boolean rmdir(String [] input) {
+        boolean result = false;
         try {
 
             if (!ftp.isConnected()) {
@@ -419,58 +527,19 @@ public class EIAClient implements com.agileFTP.EIA {
                 System.out.println("Incorrect number of parameters for rmdir. Type 'help' for command syntax.");
             }
 
-            return ftp.removeDirectory(input[1]);
-
+            result = ftp.removeDirectory(input[1]);
+            if (result == false) {
+                System.out.println("Unable to remove specified directory on remote server.  " +
+                        "Verify that the directory is empty.");
+            }
+            return result;
         }
 
         catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Unable to remove specified directory on remote server.  " +
+                    "Error communicating with remote server.");
+            return false;
         }
-        return false;
     }
-
-    // Change directory on remote server (cd command)
-    public boolean cd(String [] input) {
-        try {
-
-            if (!ftp.isConnected()) {
-                System.out.println("Not connected.");
-                return false;
-            }
-            if (input.length != 2) {
-                System.out.println("Incorrect number of parameters for cd. Type 'help' for command syntax.");
-            }
-
-            return ftp.changeWorkingDirectory(input[1]);
-
-        }
-
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-    // Change to parent directory on remote server ("cd .." command)
-    public boolean cdParent() {
-        try {
-            if (!ftp.isConnected()) {
-                System.out.println("Not connected.");
-                return false;
-            }
-            if (input.length != 2) {
-                System.out.println("Incorrect number of parameters for cd. Type 'help' for command syntax.");
-            }
-
-            return ftp.changeToParentDirectory();
-
-        }
-
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
 
 }

@@ -219,6 +219,13 @@ public class EIAClientTest {
         ftp.execute(userInput);
     }
 
+    /*
+    * speedtest.tele2.net immediately removes any created/deleted files.
+    * Unable to test rmdir until we have a fully operational FTP server
+    * (hopefully provided by professor?).  Meanwhile, I've tested it on a local ftp server
+    * running on my macbook.
+    */
+    /*
     @Test
     public void testMkDirGood() throws Exception {
         ftp.init(testCommands);
@@ -226,7 +233,17 @@ public class EIAClientTest {
         ftp.execute(userInput);
 
         userInput = "mkdir testDirectory".split(" ");
-        assertTrue(ftp.execute(userInput));
+        assertTrue(ftp.mkdir(userInput));
+    }
+
+    @Test
+    public void testMkDirBad() throws Exception {
+        ftp.init(testCommands);
+        userInput = "connect speedtest.tele2.net 21 Anonymous".split(" ");
+        ftp.execute(userInput);
+
+        userInput = "mkdir upload".split(" ");
+        assertFalse(ftp.mkdir(userInput));
     }
 
     @Test
@@ -236,71 +253,82 @@ public class EIAClientTest {
         ftp.execute(userInput);
 
         userInput = "rmdir testDirectory".split(" ");
-        assertTrue(ftp.execute(userInput));
+        assertTrue(ftp.rmdir(userInput));
     }
 
-
     @Test
-    public void testCd() throws Exception {
+    public void testRmDirBad() throws Exception {
         ftp.init(testCommands);
         userInput = "connect speedtest.tele2.net 21 Anonymous".split(" ");
         ftp.execute(userInput);
 
+        userInput = "rmdir upload".split(" ");
+        assertFalse(ftp.rmdir(userInput));
+    }
+    */
+
+    @Test
+    public void testCdGood() throws Exception {
+        String currentDir;
+        ftp.init(testCommands);
+        userInput = "connect speedtest.tele2.net 21 Anonymous".split(" ");
+        ftp.execute(userInput);
+
+        currentDir = ftp.pwd();
         userInput = "cd upload".split(" ");
-        assertTrue(ftp.execute(userInput));
+        assertTrue(ftp.cd(userInput));
 
-        // List directory contents and confirm upload empty except "Remote listing:"
-        PrintStream stdout = System.out;
-        final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
-
-        System.setOut(new PrintStream(outContent));
-
-        assertTrue(ftp.ls());
-        result = outContent.toString().contentEquals("Remote listing:" + "\n");
-
-        System.setOut(stdout);
-
-        assertTrue(result);
-
-        userInput = "disconnect".split(" ");
-        ftp.execute(userInput);
+        if (currentDir.contentEquals("/")) {
+            assertEquals(ftp.pwd(), currentDir + "upload");
+        }
+        else {
+            assertEquals(ftp.pwd(), currentDir + "/upload");
+        }
     }
 
 
     @Test
-    public void testCdDotDot() throws Exception {
+    public void testCdDotDotGood() throws Exception {
+        String currentDir;
         ftp.init(testCommands);
         userInput = "connect speedtest.tele2.net 21 Anonymous".split(" ");
         ftp.execute(userInput);
+
+        // Record current working directory
+        currentDir = ftp.pwd();
 
         // cd to upload directory
         userInput = "cd upload".split(" ");
-        assertTrue(ftp.execute(userInput));
+        ftp.cd(userInput);
 
-        // cd back to base directory to test cd ..
-        userInput = "cd ..".split(" ");
-        assertTrue(ftp.execute(userInput));
+        // cd back to base directory
+        ftp.cdParent();
 
+        // confirm we're back to the original working directory
+        assertEquals(currentDir, ftp.pwd());
 
-        // List directory contents and confirm base directory contains file "1MB.zip"
-        PrintStream stdout = System.out;
-        final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+    }
 
-        System.setOut(new PrintStream(outContent));
+    @Test
+    public void testCdDotDotBad() throws Exception {
+        String currentDir;
+        ftp.init(testCommands);
+        userInput = "connect speedtest.tele2.net 21 Anonymous".split(" ");
+        ftp.execute(userInput);
 
-        assertTrue(ftp.ls());
-        result = outContent.toString().contains("Remote listing:" + "\n");
-        assertTrue(result);
-        result = outContent.toString().contains("1MB.zip");
-        assertTrue(result);
-
-        System.setOut(stdout);
+        currentDir = ftp.pwd();
+        // cd back to base directory's parent
+        // In this case, this server keeps us in the current working directory
+        // because starting directory is / (root)
+        assertTrue(ftp.cdParent());
+        assertEquals(ftp.pwd(), currentDir);
     }
 
     /**
      * speedtest.tele2.net immediately removes any created/deleted files.
      * Unable to test rmdir until we have a fully operational FTP server
-     * (hopefully provided by professor?)
+     * (hopefully provided by professor?).  Meanwhile, I've tested it on a local ftp server
+     * running on my macbook.
      */
     /*
     @Test

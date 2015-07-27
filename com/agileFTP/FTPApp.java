@@ -213,6 +213,8 @@ public class FTPApp {
         System.out.println("cd - Change current working directory on the remote FTP host.");
         System.out.println("          Usage: cd <directory name>");
         System.out.println("             or: cd ..");
+        System.out.println("pwd - Print working directory of the remote FTP host.");
+        System.out.println("          Usage: pwd");
         System.out.println("");
         System.out.println("Local");
         System.out.println("ls - Displays the contents of the current local directory.");

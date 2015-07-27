@@ -79,8 +79,8 @@ public class EIAClient implements com.agileFTP.EIA {
             commands.put("ls", () -> {
                 ls();
             });
-            commands.put("download", () -> { download(input); });
-            commands.put("upload", () -> { upload(input); });
+            commands.put("download", () -> { fileTransfer(input); });
+            commands.put("upload", () -> { fileTransfer(input); });
         } catch (NullPointerException e) {
             return false;
         }
@@ -234,9 +234,9 @@ public class EIAClient implements com.agileFTP.EIA {
     }
 
     // Wrapper function for file uploading.
-    public boolean upload(String[] userInput) {
+    public boolean fileTransfer(String[] userInput) {
 
-        String[] uploadArray = null;
+        String[] transferArray = null;
 
         if(!ftp.isConnected()){
             System.out.println("Not connected.");
@@ -244,28 +244,45 @@ public class EIAClient implements com.agileFTP.EIA {
         }
 
         if(userInput == null) {
-            System.out.println("User input was null!");
+            System.out.println("Input was null!");
             return false;
         }
 
         if(userInput.length == 1) {
-            System.out.println("No file specified for upload.  Type 'help' for command syntax.");
+            System.out.println("No file specified for file transfer.  Type 'help' for command syntax.");
             return false;
         }
 
         // User has not completed a valid upload string.
         if((userInput.length % 2) != 1) {
-            System.out.println("Incorrect number of parameters for upload.  Type 'help' for command syntax.");
+            System.out.println("Incorrect number of parameters for file transfer.  Type 'help' for command syntax.");
             return false;
         }
 
         for(int i = 1; i < userInput.length; i += 2) {
 
-            uploadArray = new String[3];
-            uploadArray[0] = "";
-            uploadArray[1] = userInput[i];
-            uploadArray[2] = userInput[i + 1];
-            uploadToHost(uploadArray);
+            transferArray = new String[3];
+            transferArray[0] = "";
+            transferArray[1] = userInput[i];
+            transferArray[2] = userInput[i + 1];
+
+            if(userInput[0].toLowerCase().equals("upload")) {
+
+                if(!upload(transferArray)) {
+                    // There was a problem, abort any future transfers.
+                    return false;
+                }
+
+            }
+
+            else if(userInput[0].toLowerCase().equals("download")) {
+
+                if(!download(transferArray)) {
+                    // There was a problem. abort any future transfers.
+                    return false;
+                }
+            }
+
         }
 
         return true;
@@ -282,7 +299,7 @@ public class EIAClient implements com.agileFTP.EIA {
      * @param input
      * @return boolean
      */
-    public boolean uploadToHost (String[] input){
+    public boolean upload (String[] input){
         try {
             if(!ftp.isConnected()){
                 System.out.println("Not connected.");
@@ -316,6 +333,9 @@ public class EIAClient implements com.agileFTP.EIA {
             inputStream.close();
             if (success) {
                 System.out.println("The file uploaded successfully.");
+
+                // Need this here for correct implementation of a boolean function and for testing.
+                return true;
             } else {
                 System.out.println("Not quite right...");
             }
@@ -329,44 +349,6 @@ public class EIAClient implements com.agileFTP.EIA {
     }
 
 
-    // Wrapper function for download.
-    public boolean download(String[] userInput) {
-
-        String[] downloadArray = null;
-
-        if(!ftp.isConnected()){
-            System.out.println("Not connected.");
-            return false;
-        }
-
-        if(userInput == null) {
-            System.out.println("User input was null!");
-            return false;
-        }
-
-        if(userInput.length == 1) {
-            System.out.println("No file specified for download.  Type 'help' for command syntax.");
-            return false;
-        }
-
-        // User has not completed a valid upload string.
-        if((userInput.length % 2) != 1) {
-            System.out.println("Incorrect number of parameters for download.  Type 'help' for command syntax.");
-            return false;
-        }
-
-        for(int i = 1; i < userInput.length; i += 2) {
-
-            downloadArray = new String[3];
-            downloadArray[0] = "";
-            downloadArray[1] = userInput[i];
-            downloadArray[2] = userInput[i + 1];
-            downloadFromHost(downloadArray);
-        }
-
-        return true;
-    }
-
     /**
      * Get file from remove server
      * Takes a string 'input' from the command line and downloads the specified remote file
@@ -375,7 +357,7 @@ public class EIAClient implements com.agileFTP.EIA {
      * @param input
      * @return
      */
-    public boolean downloadFromHost (String[] input){
+    public boolean download (String[] input){
         //declare OutputStream outside try block so it's in scope for error handling
         OutputStream downloadStream = null;
 
@@ -430,6 +412,8 @@ public class EIAClient implements com.agileFTP.EIA {
 
             if(success){
                 System.out.println("File has been successfully downloaded");
+
+                // Need this here for correct implementation of a boolean function and for testing.
                 return true;
             } else{
                 System.out.println("File not downloaded.");

@@ -87,9 +87,6 @@ public class EIAClient implements com.agileFTP.EIA {
             commands.put("cd", () -> {
                 cd(input);
             });
-            commands.put("cd ..", () -> {
-                cdParent();
-            });
             commands.put("pwd", () -> {
                 pwd();
             });
@@ -408,7 +405,12 @@ public class EIAClient implements com.agileFTP.EIA {
                 System.out.println("Incorrect number of parameters for cd. Type 'help' for command syntax.");
             }
 
-            result = ftp.changeWorkingDirectory(input[1]);
+            if (input[1].contentEquals("..")) {
+                result = ftp.changeToParentDirectory();
+            }
+            else {
+                result = ftp.changeWorkingDirectory(input[1]);
+            }
             if (result == false) {
                 System.out.println("Unable to change to specified directory on remote server.");
             }
@@ -418,32 +420,6 @@ public class EIAClient implements com.agileFTP.EIA {
         catch (IOException e) {
             System.out.println("Unable to change to specified directory on remote server.  " +
                     "Error communicating with remote server.");
-            return false;
-        }
-    }
-
-    /**
-     * Change the parent directory on remote server ("cd .." command)
-     * @return true if successful
-     */
-    public boolean cdParent() {
-        boolean result = false;
-        try {
-            if (!ftp.isConnected()) {
-                System.out.println("Not connected.");
-                return false;
-            }
-
-            result = ftp.changeToParentDirectory();
-            if (result == false) {
-                System.out.println("Unable to change to parent directory on remote server.");
-            }
-            return result;
-        }
-
-        catch (IOException e) {
-            System.out.println("Unable to change to parent directory on remote server.)" +
-                    "  Error communicating with remote server.");
             return false;
         }
     }

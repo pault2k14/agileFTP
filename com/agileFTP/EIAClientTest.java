@@ -302,7 +302,8 @@ public class EIAClientTest {
         ftp.cd(userInput);
 
         // cd back to base directory
-        ftp.cdParent();
+        userInput = "cd ..".split(" ");
+        ftp.cd(userInput);
 
         // confirm we're back to the original working directory
         assertEquals(currentDir, ftp.pwd());
@@ -310,7 +311,7 @@ public class EIAClientTest {
     }
 
     @Test
-    public void testCdDotDotBad() throws Exception {
+    public void testCdDotDotAtRoot() throws Exception {
         String currentDir;
         ftp.init(testCommands);
         userInput = "connect speedtest.tele2.net 21 Anonymous".split(" ");
@@ -320,7 +321,8 @@ public class EIAClientTest {
         // cd back to base directory's parent
         // In this case, this server keeps us in the current working directory
         // because starting directory is / (root)
-        assertTrue(ftp.cdParent());
+        userInput = "cd ..".split(" ");
+        assertTrue(ftp.cd(userInput));
         assertEquals(ftp.pwd(), currentDir);
     }
 

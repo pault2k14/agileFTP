@@ -311,21 +311,6 @@ public class EIAClient implements com.agileFTP.EIA {
                 return false;
             }
 
-            // Enter Local Passive mode to switch data connection mode from server-to-client (default mode) to client-to-server
-            // and to get through firewall and avoid potential connection issues
-            /**
-             * According to the API docs:
-             * The FTPClient will stay in PASSIVE_LOCAL_DATA_CONNECTION_MODE until the mode is changed
-             * by calling some other method such as enterLocalActiveMode()
-             * However: currently calling any connect method will reset the mode to ACTIVE_LOCAL_DATA_CONNECTION_MODE.
-             */
-/*            ftp.enterLocalPassiveMode();
-            try {
-                ftp.setFileType(FTP.BINARY_FILE_TYPE);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }*/
-
             File uploaded = new File (input[2]);  //create remote file
 
             InputStream inputStream = new FileInputStream(uploaded);

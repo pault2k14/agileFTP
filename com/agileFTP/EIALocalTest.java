@@ -43,7 +43,7 @@ public class EIALocalTest {
     @Test
     public void testExecuteGood() throws Exception {
         local.init(testCommands);
-        userInput = "ls".split(" ");
+        userInput = FTPApp.split("ls");
         result = local.execute(userInput);
         assertTrue(result);
     }
@@ -51,7 +51,7 @@ public class EIALocalTest {
     @Test
     public void testExecuteBad() throws Exception {
         local.init(testCommands);
-        userInput = "notls".split(" ");
+        userInput = FTPApp.split("notls");
         result = local.execute(userInput);
         assertFalse(result);
     }
@@ -74,7 +74,7 @@ public class EIALocalTest {
         final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
 
         local.init(testCommands);
-        userInput = "ls".split(" ");
+        userInput = FTPApp.split("ls");
         local.execute(userInput);
 
         System.setOut(new PrintStream(outContent));

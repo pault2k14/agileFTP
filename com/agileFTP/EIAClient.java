@@ -79,8 +79,8 @@ public class EIAClient implements com.agileFTP.EIA {
             commands.put("ls", () -> {
                 ls();
             });
-            commands.put("download", () -> { download(input); });
-            commands.put("upload", () -> { upload(input); });
+            commands.put("download", () -> { fileTransfer(input); });
+            commands.put("upload", () -> { fileTransfer(input); });
         } catch (NullPointerException e) {
             return false;
         }
@@ -93,6 +93,10 @@ public class EIAClient implements com.agileFTP.EIA {
 
     // Connect wrapper to determine if the user entered a password or not.
     protected boolean connect(String []input) {
+
+        if(input == null) {
+            return false;
+        }
 
         // This case is when the user types <connect> <name of saved connection>
         if(input.length == 2) {
@@ -115,19 +119,7 @@ public class EIAClient implements com.agileFTP.EIA {
     }
 
 
-    // Connect to the remote server with a password.
-    public boolean connectWithPassword(String userHost, String port, String username, String password) {
-
-        if (userHost.equals(null) || port.equals(null) || username.equals(null) || password.equals(null)) {
-            System.out.println("Error: hostname, port, username, and password must be provided.");
-            return false;
-        }
-
-        return true;
-    }
-
-
-    // Connect to the remote server with a blank password.
+    // Connect to the remote server
     protected boolean connectToHost(String userHost, String port, String username, String password) {
 
         if (userHost == null || port == null  || username == null || password == null) {
@@ -241,6 +233,62 @@ public class EIAClient implements com.agileFTP.EIA {
 
     }
 
+    // Wrapper function for file uploading.
+    public boolean fileTransfer(String[] userInput) {
+
+        String[] transferArray = null;
+
+        if(!ftp.isConnected()){
+            System.out.println("Not connected.");
+            return false;
+        }
+
+        if(userInput == null) {
+            System.out.println("Input was null!");
+            return false;
+        }
+
+        if(userInput.length == 1) {
+            System.out.println("No file specified for file transfer.  Type 'help' for command syntax.");
+            return false;
+        }
+
+        // User has not completed a valid upload string.
+        if((userInput.length % 2) != 1) {
+            System.out.println("Incorrect number of parameters for file transfer.  Type 'help' for command syntax.");
+            return false;
+        }
+
+        for(int i = 1; i < userInput.length; i += 2) {
+
+            transferArray = new String[3];
+            transferArray[0] = "";
+            transferArray[1] = userInput[i];
+            transferArray[2] = userInput[i + 1];
+
+            if(userInput[0].toLowerCase().equals("upload")) {
+
+                if(!upload(transferArray)) {
+                    // There was a problem, abort any future transfers.
+                    return false;
+                }
+
+            }
+
+            else if(userInput[0].toLowerCase().equals("download")) {
+
+                if(!download(transferArray)) {
+                    // There was a problem. abort any future transfers.
+                    return false;
+                }
+            }
+
+        }
+
+        return true;
+    }
+
+
     /**
      * Upload file to remove server
      * Takes a string 'input' from the command line and uploads the specified local file
@@ -285,6 +333,9 @@ public class EIAClient implements com.agileFTP.EIA {
             inputStream.close();
             if (success) {
                 System.out.println("The file uploaded successfully.");
+
+                // Need this here for correct implementation of a boolean function and for testing.
+                return true;
             } else {
                 System.out.println("Not quite right...");
             }
@@ -342,6 +393,8 @@ public class EIAClient implements com.agileFTP.EIA {
 
             if(success){
                 System.out.println("File has been successfully downloaded");
+
+                // Need this here for correct implementation of a boolean function and for testing.
                 return true;
             } else{
                 System.out.println("File not downloaded.");

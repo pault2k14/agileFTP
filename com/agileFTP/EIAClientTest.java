@@ -1,8 +1,11 @@
 package com.agileFTP;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.PrintStream;
 import java.util.HashMap;
 
 import static org.junit.Assert.*;
@@ -19,18 +22,18 @@ public class EIAClientTest {
     @Test
     public void testExecuteGood() throws Exception {
         ftp.init(testCommands);
-        userInput = "connect speedtest.tele2.net 21 Anonymous".split(" ");
+        userInput = FTPApp.split("connect speedtest.tele2.net 21 Anonymous");
         result = ftp.execute(userInput);
         assertTrue(result);
 
-        userInput = "disconnect".split(" ");
+        userInput = FTPApp.split("disconnect");
         result = ftp.execute(userInput);
     }
 
     @Test
     public void testExecuteBad() throws Exception {
         ftp.init(testCommands);
-        userInput = "notconnect speedtest.tele2.net 21 Anonymous".split(" ");
+        userInput = FTPApp.split("notconnect speedtest.tele2.net 21 Anonymous");
         result = ftp.execute(userInput);
         assertFalse(result);
     }
@@ -39,11 +42,11 @@ public class EIAClientTest {
     public void testGetHost() throws Exception {
         testHost = "speedtest.tele2.net";
         ftp.init(testCommands);
-        userInput = "connect speedtest.tele2.net 21 Anonymous".split(" ");
+        userInput = FTPApp.split("connect speedtest.tele2.net 21 Anonymous");
         result = ftp.execute(userInput);
         assertEquals(testHost, ftp.getHost());
 
-        userInput = "disconnect".split(" ");
+        userInput = FTPApp.split("disconnect");
         result = ftp.execute(userInput);
 
     }
@@ -52,11 +55,11 @@ public class EIAClientTest {
     public void testGetDecorator() throws Exception {
         testDecorator = "speedtest.tele2.net";
         ftp.init(testCommands);
-        userInput = "connect speedtest.tele2.net 21 Anonymous".split(" ");
+        userInput = FTPApp.split("connect speedtest.tele2.net 21 Anonymous");
         result = ftp.execute(userInput);
         assertEquals(testDecorator, ftp.getDecorator());
 
-        userInput = "disconnect".split(" ");
+        userInput = FTPApp.split("disconnect");
         result = ftp.execute(userInput);
     }
 
@@ -73,27 +76,27 @@ public class EIAClientTest {
 
     @Test
     public void testConnectWithNoPassword() throws Exception {
-        userInput = "connect speedtest.tele2.net 21 Anonymous".split(" ");
+        userInput = FTPApp.split("connect speedtest.tele2.net 21 Anonymous");
         assertEquals(true, ftp.connect(userInput));
 
-        userInput = "disconnect".split(" ");
+        userInput = FTPApp.split("disconnect");
         result = ftp.execute(userInput);
 
     }
 
     @Test
     public void testConnectWithPassword() throws Exception {
-        userInput = "connect speedtest.tele2.net 21 Anonymous test".split(" ");
+        userInput = FTPApp.split("connect speedtest.tele2.net 21 Anonymous test");
         assertEquals(true, ftp.connect(userInput));
 
-        userInput = "disconnect".split(" ");
+        userInput = FTPApp.split("disconnect");
         result = ftp.execute(userInput);
 
     }
 
     @Test
     public void testConnectBadSyntax() throws Exception {
-        userInput = "connect speedtest.tele2.net".split(" ");
+        userInput = FTPApp.split("connect speedtest.tele2.net");
         assertEquals(false, ftp.connect(userInput));
 
     }
@@ -135,13 +138,13 @@ public class EIAClientTest {
     public void testConnectToHostAlreadyConnectedBad() throws Exception {
 
         ftp.init(testCommands);
-        userInput = "connect speedtest.tele2.net 21 Anonymous".split(" ");
+        userInput = FTPApp.split("connect speedtest.tele2.net 21 Anonymous");
         ftp.execute(userInput);
 
         result = ftp.connectToHost(userInput[1], userInput[2], userInput[3], "");
         assertEquals(false, result);
 
-        userInput = "disconnect".split(" ");
+        userInput = FTPApp.split("disconnect");
         result = ftp.execute(userInput);
 
     }
@@ -149,7 +152,7 @@ public class EIAClientTest {
     @Test
     public void testConnectToHostBadHostname() throws Exception {
 
-        userInput = "connect speedtest.tele2.ne 21 Anonymous".split(" ");
+        userInput = FTPApp.split("connect speedtest.tele2.ne 21 Anonymous");
         result = ftp.connectToHost(userInput[1], userInput[2], userInput[3], "");
         assertEquals(false, result);
 
@@ -158,7 +161,7 @@ public class EIAClientTest {
     @Test
     public void testConnectToHostBadUsername() throws Exception {
 
-        userInput = "connect speedtest.tele2.net 21 badtest".split(" ");
+        userInput = FTPApp.split("connect speedtest.tele2.net 21 badtest");
         result = ftp.connectToHost(userInput[1], userInput[2], userInput[3], "");
         assertEquals(false, result);
 
@@ -167,7 +170,7 @@ public class EIAClientTest {
     @Test
     public void testConnectToHostGood() throws Exception {
 
-        userInput = "connect speedtest.tele2.net 21 Anonymous".split(" ");
+        userInput = FTPApp.split("connect speedtest.tele2.net 21 Anonymous");
         result = ftp.connectToHost(userInput[1], userInput[2], userInput[3], "");
         assertEquals(true, result);
 
@@ -183,7 +186,7 @@ public class EIAClientTest {
     public void testDisconnectGood() throws Exception {
 
         ftp.init(testCommands);
-        userInput = "connect speedtest.tele2.net 21 Anonymous".split(" ");
+        userInput = FTPApp.split("connect speedtest.tele2.net 21 Anonymous");
         ftp.execute(userInput);
 
         assertTrue(ftp.disconnect());
@@ -202,7 +205,7 @@ public class EIAClientTest {
         final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
 
         ftp.init(testCommands);
-        userInput = "connect speedtest.tele2.net 21 Anonymous".split(" ");
+        userInput = FTPApp.split("connect speedtest.tele2.net 21 Anonymous");
         ftp.execute(userInput);
 
         System.setOut(new PrintStream(outContent));
@@ -214,21 +217,127 @@ public class EIAClientTest {
 
         System.setOut(stdout);
 
-        userInput = "disconnect".split(" ");
+        userInput = FTPApp.split("disconnect");
         ftp.execute(userInput);
     }
 
     @Test
-    public void testDownload() throws Exception {
+    public void testFileTransferNotConnected() throws Exception {
+
+        userInput = FTPApp.split("download 512KB.zip local512KB.zip");
+        assertFalse(ftp.fileTransfer(userInput));
+
+    }
+
+    @Test
+    public void testFileTransferUserInputNull() throws Exception {
 
         ftp.init(testCommands);
-        userInput = "connect speedtest.tele2.net 21 Anonymous".split(" ");
+        userInput = FTPApp.split("connect speedtest.tele2.net 21 Anonymous");
+        ftp.execute(userInput);
+        assertFalse(ftp.fileTransfer(null));
+
+        userInput = FTPApp.split("disconnect");
         ftp.execute(userInput);
 
-        userInput = "download 512KB.zip localtest.zip".split(" ");
-        assertEquals(true, ftp.download(userInput));
-
-        userInput = "disconnect".split(" ");
-        ftp.execute(userInput);
     }
+
+    @Test
+    public void testFileTransferNoFileSpecified() throws Exception {
+
+        ftp.init(testCommands);
+        userInput = FTPApp.split("connect speedtest.tele2.net 21 Anonymous");
+        ftp.execute(userInput);
+
+        userInput = FTPApp.split("download");
+        assertFalse(ftp.fileTransfer(userInput));
+
+        userInput = FTPApp.split("disconnect");
+        ftp.execute(userInput);
+
+    }
+
+    @Test
+    public void testFileTransferIncorrectNumberOfParams() throws Exception {
+
+        ftp.init(testCommands);
+        userInput = FTPApp.split("connect speedtest.tele2.net 21 Anonymous");
+        ftp.execute(userInput);
+
+        userInput = FTPApp.split("download 512KB.zip");
+        assertFalse(ftp.fileTransfer(userInput));
+
+        userInput = FTPApp.split("disconnect");
+        ftp.execute(userInput);
+
+    }
+
+
+    @Test
+    public void testFileTransferMultiDownloadAndUploadGood() throws Exception {
+
+        ftp.init(testCommands);
+        userInput = FTPApp.split("connect speedtest.tele2.net 21 Anonymous");
+        ftp.execute(userInput);
+
+        userInput = FTPApp.split("download 512KB.zip local512KB.zip 1MB.zip local1MB.zip");
+        assertTrue(ftp.fileTransfer(userInput));
+
+        File upload1 = FileUtils.getFile(PathHelper.getDownloadsPath() + "local512KB.zip");
+        File upload2 = FileUtils.getFile(PathHelper.getDownloadsPath() + "local1MB.zip");
+
+        userInput = new String[5];
+
+        userInput[0] = "upload";
+        userInput[1] = "upload/new512KB.zip";
+        userInput[2] = upload1.getAbsolutePath();
+        userInput[3] = "upload/new1MB.zip";
+        userInput[4] = upload2.getAbsolutePath();
+
+        assertTrue(ftp.fileTransfer(userInput));
+
+        userInput = FTPApp.split("disconnect");
+        ftp.execute(userInput);
+
+        if(upload1.exists()) {
+            upload1.delete();
+        }
+
+        if(upload2.exists()) {
+            upload2.delete();
+        }
+
+    }
+
+
+    // This test won't pass until the underlying problems with specifying a non existent filename in
+    // the upload and download functions are fixed.
+    // Please enable when those are fixed.
+    //@Test
+    public void testFileTransferMultiDownloadAndUploadBad() throws Exception {
+
+        ftp.init(testCommands);
+        userInput = FTPApp.split("connect speedtest.tele2.net 21 Anonymous");
+        ftp.execute(userInput);
+
+        userInput = FTPApp.split("download test12345.zip localtest12345.zip testabcde.zip localtestabcde.zip");
+        assertFalse(ftp.fileTransfer(userInput));
+
+
+        userInput = new String[5];
+
+        userInput[0] = "upload";
+        userInput[1] = "upload/new512KB.zip";
+        userInput[2] = PathHelper.getDownloadsPath() + "file_that_does_not_exist_1.zip";
+        userInput[3] = "upload/new1MB.zip";
+        userInput[4] = PathHelper.getDownloadsPath() + "file_that_does_not_exist_2.zip";
+
+        assertFalse(ftp.fileTransfer(userInput));
+
+        userInput = FTPApp.split("disconnect");
+        ftp.execute(userInput);
+
+    }
+
+
 }

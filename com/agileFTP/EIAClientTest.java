@@ -340,4 +340,19 @@ public class EIAClientTest {
     }
 
 
+    @Test
+    public void testDownload() throws Exception {
+
+        ftp.init(testCommands);
+        userInput = "connect speedtest.tele2.net 21 Anonymous".split(" ");
+        ftp.execute(userInput);
+
+        userInput = "download 512KB.zip localtest.zip".split(" ");
+        assertEquals(true, ftp.download(userInput));
+
+        userInput = "disconnect".split(" ");
+        ftp.execute(userInput);
+    }
+
+
 }

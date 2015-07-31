@@ -316,6 +316,11 @@ public class EIAClient implements com.agileFTP.EIA {
 
             File uploaded = new File (input[2]);  //create remote file
 
+            if (!uploaded.exists()) {
+                System.out.println("File does not exist");
+                return false;
+            }
+
             inputStream = new FileInputStream(uploaded);
             boolean success = ftp.storeFile(input[1], inputStream);
             try{

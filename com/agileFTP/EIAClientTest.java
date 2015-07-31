@@ -354,5 +354,58 @@ public class EIAClientTest {
         ftp.execute(userInput);
     }
 
+    @Test
+    public void testUpload() throws Exception {
 
+        ftp.init(testCommands);
+        userInput = "connect speedtest.tele2.net 21 Anonymous".split(" ");
+        ftp.execute(userInput);
+
+        File temp = File.createTempFile("testUpload", ".tmp");
+        String fileToUpload = temp.getAbsolutePath();
+
+        userInput = ("upload upload/testUpload.tmp " + fileToUpload).split(" ");
+        assertEquals(true, ftp.upload(userInput));
+
+        userInput = "disconnect".split(" ");
+        ftp.execute(userInput);
+    }
+
+    @Test
+    public void testUploadNoFileBad() throws Exception {
+
+        ftp.init(testCommands);
+        userInput = "connect speedtest.tele2.net 21 Anonymous".split(" ");
+        ftp.execute(userInput);
+
+        userInput = "upload upload/nofile.txt nofile.txt".split(" ");
+        assertEquals(false, ftp.upload(userInput));
+
+        userInput = "disconnect".split(" ");
+        ftp.execute(userInput);
+    }
+
+    @Test
+    public void testUploadNotConnectedBad() throws Exception {
+
+        File temp = File.createTempFile("testUpload", ".tmp");
+        String fileToUpload = temp.getAbsolutePath();
+
+        userInput = ("upload upload/testUpload.tmp " + fileToUpload).split(" ");
+        assertEquals(false, ftp.upload(userInput));
+    }
+
+    @Test
+    public void testUploadTooManyArgsBad() throws Exception {
+
+        ftp.init(testCommands);
+        userInput = "connect speedtest.tele2.net 21 Anonymous".split(" ");
+        ftp.execute(userInput);
+
+        userInput = "upload upload/nofile.txt nofile.txt junk".split(" ");
+        assertEquals(false, ftp.upload(userInput));
+
+        userInput = "disconnect".split(" ");
+        ftp.execute(userInput);
+    }
 }

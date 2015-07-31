@@ -300,6 +300,9 @@ public class EIAClient implements com.agileFTP.EIA {
      * @return boolean
      */
     public boolean upload (String[] input){
+        //declare InputStream outside try block so it's in scope for error handling
+        InputStream inputStream = null;
+
         try {
             if(!ftp.isConnected()){
                 System.out.println("Not connected.");
@@ -313,22 +316,36 @@ public class EIAClient implements com.agileFTP.EIA {
 
             File uploaded = new File (input[2]);  //create remote file
 
-            InputStream inputStream = new FileInputStream(uploaded);
+            if (!uploaded.exists()) {
+                System.out.println("File does not exist");
+                return false;
+            }
+
+            inputStream = new FileInputStream(uploaded);
             boolean success = ftp.storeFile(input[1], inputStream);
-            inputStream.close();
+            try{
+                inputStream.close();
+            } catch(IOException e){
+                logger.log(Level.SEVERE, "Input stream failed to close.", e);
+            }
+
             if (success) {
                 System.out.println("The file uploaded successfully.");
 
                 // Need this here for correct implementation of a boolean function and for testing.
                 return true;
             } else {
-                System.out.println("Not quite right...");
+                System.out.println("File not uploaded.");
             }
 
         }
 
         catch (IOException e){
-            e.printStackTrace();
+            System.out.println("File does not exist or invalid filepath.");
+        }
+        //close download stream if it never closed in the try block
+        finally{
+            IOUtils.closeQuietly(inputStream);
         }
         return false;
     }

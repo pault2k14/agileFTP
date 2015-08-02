@@ -38,7 +38,7 @@ public class FTPApp {
 
         while(guard) {
             System.out.print(currentMode + ": " + inUseMode.getDecorator() + " > ");
-            input = scan.nextLine().split(" ");
+            input = split(scan.nextLine());
             execute(input);
         }
 
@@ -73,7 +73,7 @@ public class FTPApp {
 
     // Splits a user's input by spaces, but keeps
     // input surrounded by quotes as one unit.
-    public String[] split(String input) {
+    public static String[] split(String input) {
 
         char[] userInput = null;
         String[] inputArray = new String[100];

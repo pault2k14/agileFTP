@@ -81,8 +81,6 @@ public class EIAClient implements com.agileFTP.EIA {
             });
             commands.put("download", () -> { fileTransfer(input); });
             commands.put("upload", () -> { fileTransfer(input); });
-            commands.put("download", () -> { download(input); });
-            commands.put("upload", () -> { upload(input); });
             commands.put("mkdir", () -> {
                 mkdir(input);
             });

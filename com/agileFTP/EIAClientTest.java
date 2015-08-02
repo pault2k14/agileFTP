@@ -22,7 +22,7 @@ public class EIAClientTest {
     @Test
     public void testExecuteGood() throws Exception {
         ftp.init(testCommands);
-        userInput = FTPApp.split("connect speedtest.tele2.net 21 Anonymous");
+        userInput = FTPApp.split("connect eiaftp.cloudapp.net 21 eia eia");
         result = ftp.execute(userInput);
         assertTrue(result);
 
@@ -33,16 +33,16 @@ public class EIAClientTest {
     @Test
     public void testExecuteBad() throws Exception {
         ftp.init(testCommands);
-        userInput = FTPApp.split("notconnect speedtest.tele2.net 21 Anonymous");
+        userInput = FTPApp.split("notconnect eiaftp.cloudapp.net 21 eia eia");
         result = ftp.execute(userInput);
         assertFalse(result);
     }
 
     @Test
     public void testGetHost() throws Exception {
-        testHost = "speedtest.tele2.net";
+        testHost = "eiaftp.cloudapp.net";
         ftp.init(testCommands);
-        userInput = FTPApp.split("connect speedtest.tele2.net 21 Anonymous");
+        userInput = FTPApp.split("connect eiaftp.cloudapp.net 21 eia eia");
         result = ftp.execute(userInput);
         assertEquals(testHost, ftp.getHost());
 
@@ -53,9 +53,9 @@ public class EIAClientTest {
 
     @Test
     public void testGetDecorator() throws Exception {
-        testDecorator = "speedtest.tele2.net";
+        testDecorator = "eiaftp.cloudapp.net";
         ftp.init(testCommands);
-        userInput = FTPApp.split("connect speedtest.tele2.net 21 Anonymous");
+        userInput = FTPApp.split("connect eiaftp.cloudapp.net 21 eia eia");
         result = ftp.execute(userInput);
         assertEquals(testDecorator, ftp.getDecorator());
 
@@ -84,9 +84,10 @@ public class EIAClientTest {
 
     }
 
+
     @Test
     public void testConnectWithPassword() throws Exception {
-        userInput = FTPApp.split("connect speedtest.tele2.net 21 Anonymous test");
+        userInput = FTPApp.split("connect eiaftp.cloudapp.net 21 eia eia");
         assertEquals(true, ftp.connect(userInput));
 
         userInput = FTPApp.split("disconnect");
@@ -138,7 +139,7 @@ public class EIAClientTest {
     public void testConnectToHostAlreadyConnectedBad() throws Exception {
 
         ftp.init(testCommands);
-        userInput = FTPApp.split("connect speedtest.tele2.net 21 Anonymous");
+        userInput = FTPApp.split("connect eiaftp.cloudapp.net 21 eia eia");
         ftp.execute(userInput);
 
         result = ftp.connectToHost(userInput[1], userInput[2], userInput[3], "");
@@ -170,8 +171,8 @@ public class EIAClientTest {
     @Test
     public void testConnectToHostGood() throws Exception {
 
-        userInput = FTPApp.split("connect speedtest.tele2.net 21 Anonymous");
-        result = ftp.connectToHost(userInput[1], userInput[2], userInput[3], "");
+        userInput = FTPApp.split("connect eiaftp.cloudapp.net 21 eia eia");
+        result = ftp.connectToHost(userInput[1], userInput[2], userInput[3], userInput[4]);
         assertEquals(true, result);
 
     }
@@ -186,7 +187,7 @@ public class EIAClientTest {
     public void testDisconnectGood() throws Exception {
 
         ftp.init(testCommands);
-        userInput = FTPApp.split("connect speedtest.tele2.net 21 Anonymous");
+        userInput = FTPApp.split("connect eiaftp.cloudapp.net 21 eia eia");
         ftp.execute(userInput);
 
         assertTrue(ftp.disconnect());
@@ -205,7 +206,7 @@ public class EIAClientTest {
         final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
 
         ftp.init(testCommands);
-        userInput = FTPApp.split("connect speedtest.tele2.net 21 Anonymous");
+        userInput = FTPApp.split("connect eiaftp.cloudapp.net 21 eia eia");
         ftp.execute(userInput);
 
         System.setOut(new PrintStream(outContent));
@@ -233,7 +234,7 @@ public class EIAClientTest {
     public void testFileTransferUserInputNull() throws Exception {
 
         ftp.init(testCommands);
-        userInput = FTPApp.split("connect speedtest.tele2.net 21 Anonymous");
+        userInput = FTPApp.split("connect eiaftp.cloudapp.net 21 eia eia");
         ftp.execute(userInput);
         assertFalse(ftp.fileTransfer(null));
 
@@ -246,7 +247,7 @@ public class EIAClientTest {
     public void testFileTransferNoFileSpecified() throws Exception {
 
         ftp.init(testCommands);
-        userInput = FTPApp.split("connect speedtest.tele2.net 21 Anonymous");
+        userInput = FTPApp.split("connect eiaftp.cloudapp.net 21 eia eia");
         ftp.execute(userInput);
 
         userInput = FTPApp.split("download");
@@ -261,7 +262,7 @@ public class EIAClientTest {
     public void testFileTransferIncorrectNumberOfParams() throws Exception {
 
         ftp.init(testCommands);
-        userInput = FTPApp.split("connect speedtest.tele2.net 21 Anonymous");
+        userInput = FTPApp.split("connect eiaftp.cloudapp.net 21 eia eia");
         ftp.execute(userInput);
 
         userInput = FTPApp.split("download 512KB.zip");
@@ -277,7 +278,7 @@ public class EIAClientTest {
     public void testFileTransferMultiDownloadAndUploadGood() throws Exception {
 
         ftp.init(testCommands);
-        userInput = FTPApp.split("connect speedtest.tele2.net 21 Anonymous");
+        userInput = FTPApp.split("connect eiaftp.cloudapp.net 21 eia eia");
         ftp.execute(userInput);
 
         userInput = FTPApp.split("download 512KB.zip local512KB.zip 1MB.zip local1MB.zip");
@@ -317,7 +318,7 @@ public class EIAClientTest {
     public void testFileTransferMultiDownloadAndUploadBad() throws Exception {
 
         ftp.init(testCommands);
-        userInput = FTPApp.split("connect speedtest.tele2.net 21 Anonymous");
+        userInput = FTPApp.split("connect eiaftp.cloudapp.net 21 eia eia");
         ftp.execute(userInput);
 
         userInput = FTPApp.split("download test12345.zip localtest12345.zip testabcde.zip localtestabcde.zip");
@@ -408,4 +409,122 @@ public class EIAClientTest {
         userInput = "disconnect".split(" ");
         ftp.execute(userInput);
     }
+
+    /*
+    * speedtest.tele2.net immediately removes any created/deleted files.
+    * Unable to test rmdir until we have a fully operational FTP server
+    * (hopefully provided by professor?).  Meanwhile, I've tested it on a local ftp server
+    * running on my macbook.
+    */
+    /*
+    @Test
+    public void testMkDirGood() throws Exception {
+        ftp.init(testCommands);
+        userInput = "connect speedtest.tele2.net 21 Anonymous".split(" ");
+        ftp.execute(userInput);
+        userInput = "mkdir testDirectory".split(" ");
+        assertTrue(ftp.mkdir(userInput));
+    }
+    @Test
+    public void testMkDirBad() throws Exception {
+        ftp.init(testCommands);
+        userInput = "connect speedtest.tele2.net 21 Anonymous".split(" ");
+        ftp.execute(userInput);
+        userInput = "mkdir upload".split(" ");
+        assertFalse(ftp.mkdir(userInput));
+    }
+    @Test
+    public void testRmDirGood() throws Exception {
+        ftp.init(testCommands);
+        userInput = "connect speedtest.tele2.net 21 Anonymous".split(" ");
+        ftp.execute(userInput);
+        userInput = "rmdir testDirectory".split(" ");
+        assertTrue(ftp.rmdir(userInput));
+    }
+    @Test
+    public void testRmDirBad() throws Exception {
+        ftp.init(testCommands);
+        userInput = "connect speedtest.tele2.net 21 Anonymous".split(" ");
+        ftp.execute(userInput);
+        userInput = "rmdir upload".split(" ");
+        assertFalse(ftp.rmdir(userInput));
+    }
+    */
+
+    @Test
+    public void testCdGood() throws Exception {
+        String currentDir;
+        ftp.init(testCommands);
+        userInput = "connect speedtest.tele2.net 21 Anonymous".split(" ");
+        ftp.execute(userInput);
+
+        currentDir = ftp.pwd();
+        userInput = "cd upload".split(" ");
+        assertTrue(ftp.cd(userInput));
+
+        if (currentDir.contentEquals("/")) {
+            assertEquals(ftp.pwd(), currentDir + "upload");
+        }
+        else {
+            assertEquals(ftp.pwd(), currentDir + "/upload");
+        }
+    }
+
+
+    @Test
+    public void testCdDotDotGood() throws Exception {
+        String currentDir;
+        ftp.init(testCommands);
+        userInput = "connect speedtest.tele2.net 21 Anonymous".split(" ");
+        ftp.execute(userInput);
+
+        // Record current working directory
+        currentDir = ftp.pwd();
+
+        // cd to upload directory
+        userInput = "cd upload".split(" ");
+        ftp.cd(userInput);
+
+        // cd back to base directory
+        userInput = "cd ..".split(" ");
+        ftp.cd(userInput);
+
+        // confirm we're back to the original working directory
+        assertEquals(currentDir, ftp.pwd());
+
+    }
+
+    @Test
+    public void testCdDotDotAtRoot() throws Exception {
+        String currentDir;
+        ftp.init(testCommands);
+        userInput = "connect speedtest.tele2.net 21 Anonymous".split(" ");
+        ftp.execute(userInput);
+
+        currentDir = ftp.pwd();
+        // cd back to base directory's parent
+        // In this case, this server keeps us in the current working directory
+        // because starting directory is / (root)
+        userInput = "cd ..".split(" ");
+        assertTrue(ftp.cd(userInput));
+        assertEquals(ftp.pwd(), currentDir);
+    }
+
+    /**
+     * speedtest.tele2.net immediately removes any created/deleted files.
+     * Unable to test rmdir until we have a fully operational FTP server
+     * (hopefully provided by professor?).  Meanwhile, I've tested it on a local ftp server
+     * running on my macbook.
+     */
+    /*
+    @Test
+    public void testRmDirGood() throws Exception {
+        ftp.init(testCommands);
+        userInput = "connect speedtest.tele2.net 21 Anonymous".split(" ");
+        ftp.execute(userInput);
+        assertTrue(ftp.mkdir("rmdir testDirectory".split(" ")));
+        userInput = "disconnect".split(" ");
+        ftp.execute(userInput);
+    }
+    */
 }

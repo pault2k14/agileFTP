@@ -206,15 +206,6 @@ public class FTPApp {
         System.out.println("          Usage: download <remote file name> <new local file name>");
         System.out.println("upload - upload a single file to the FTP host.");
         System.out.println("          Usage: upload <file name> <local file path>");
-        System.out.println("mkdir - Make a directory on the remote FTP host.");
-        System.out.println("          Usage: mkdir <directory name>");
-        System.out.println("rmdir - Remove a directory on the remote FTP host.");
-        System.out.println("          Usage: rmdir <directory name>");
-        System.out.println("cd - Change current working directory on the remote FTP host.");
-        System.out.println("          Usage: cd <directory name>");
-        System.out.println("             or: cd ..");
-        System.out.println("pwd - Print working directory of the remote FTP host.");
-        System.out.println("          Usage: pwd");
         System.out.println("");
         System.out.println("Local");
         System.out.println("ls - Displays the contents of the current local directory.");

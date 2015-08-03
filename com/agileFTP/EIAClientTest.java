@@ -527,4 +527,179 @@ public class EIAClientTest {
         ftp.execute(userInput);
     }
     */
+
+    @Test
+    public void testRemoveFileGood() throws Exception {
+
+        ftp.init(testCommands);
+        userInput = FTPApp.split("connect eiaftp.cloudapp.net 21 eia eia");
+        ftp.execute(userInput);
+
+        File temp = File.createTempFile("testUpload", ".tmp");
+        String fileToUpload = temp.getAbsolutePath();
+
+        userInput = FTPApp.split("upload upload/testUpload.tmp " + fileToUpload);
+        assertTrue(ftp.upload(userInput));
+
+        userInput = FTPApp.split("rm upload/testUpload.tmp");
+        assertTrue(ftp.rm(userInput));
+
+        userInput = FTPApp.split("disconnect");
+        ftp.execute(userInput);
+    }
+
+    @Test
+    public void testRemoveFileBadNoSuchFile() throws Exception {
+
+        ftp.init(testCommands);
+        userInput = FTPApp.split("connect eiaftp.cloudapp.net 21 eia eia");
+        ftp.execute(userInput);
+
+        userInput = FTPApp.split("rm upload/testUpload.tmp");
+        assertFalse(ftp.rm(userInput));
+
+        userInput = FTPApp.split("disconnect");
+        ftp.execute(userInput);
+    }
+
+
+    @Test
+    public void testRmBadNullUserInput() throws Exception {
+
+        ftp.init(testCommands);
+        userInput = FTPApp.split("connect eiaftp.cloudapp.net 21 eia eia");
+        ftp.execute(userInput);
+
+        userInput = null;
+        assertFalse(ftp.rm(userInput));
+
+        userInput = FTPApp.split("disconnect");
+        ftp.execute(userInput);
+
+    }
+
+    @Test
+    public void testRmBadWrongNumberOfArgs() throws Exception {
+
+        ftp.init(testCommands);
+        userInput = FTPApp.split("connect eiaftp.cloudapp.net 21 eia eia");
+        ftp.execute(userInput);
+
+        userInput = FTPApp.split("rm upload/testUpload.tmp C:\\test123\testUpload.tmp");
+        assertFalse(ftp.rm(userInput));
+
+        userInput = FTPApp.split("disconnect");
+        ftp.execute(userInput);
+    }
+
+    @Test
+    public void testRmBadNotConnected() throws Exception {
+
+        ftp.init(testCommands);
+
+        userInput = FTPApp.split("rm upload/testUpload.tmp");
+        assertFalse(ftp.rm(userInput));
+
+    }
+
+    @Test
+    public void testMvBadNullUserInput() throws Exception {
+
+        ftp.init(testCommands);
+        userInput = FTPApp.split("connect eiaftp.cloudapp.net 21 eia eia");
+        ftp.execute(userInput);
+
+        userInput = null;
+        assertFalse(ftp.mv(userInput));
+
+        userInput = FTPApp.split("disconnect");
+        ftp.execute(userInput);
+
+    }
+
+    @Test
+    public void testMvBadWrongNumberOfArgs() throws Exception {
+
+        ftp.init(testCommands);
+        userInput = FTPApp.split("connect eiaftp.cloudapp.net 21 eia eia");
+        ftp.execute(userInput);
+
+        userInput = FTPApp.split("mv upload/testUpload.tmp upload/newTestUpload.tmp upload/newTestUpload2.tmp");
+        assertFalse(ftp.mv(userInput));
+
+        userInput = FTPApp.split("disconnect");
+        ftp.execute(userInput);
+    }
+
+    @Test
+    public void testMvBadNotConnected() throws Exception {
+
+        ftp.init(testCommands);
+
+        userInput = FTPApp.split("mv upload/testUpload.tmp upload/newTestUpload.tmp");
+        assertFalse(ftp.mv(userInput));
+
+    }
+
+
+    @Test
+    public void testRenameFileGood() throws Exception {
+
+        ftp.init(testCommands);
+        userInput = FTPApp.split("connect eiaftp.cloudapp.net 21 eia eia");
+        ftp.execute(userInput);
+
+        File temp = File.createTempFile("testUpload", ".tmp");
+        String fileToUpload = temp.getAbsolutePath();
+
+        userInput = FTPApp.split("upload upload/testUpload.tmp " + fileToUpload);
+        assertTrue(ftp.upload(userInput));
+
+        userInput = FTPApp.split("mv upload/testUpload.tmp upload/newTestUpload.tmp");
+        assertTrue(ftp.mv(userInput));
+
+        userInput = FTPApp.split("rm upload/newTestUpload.tmp");
+        assertTrue(ftp.rm(userInput));
+
+        userInput = FTPApp.split("disconnect");
+        ftp.execute(userInput);
+    }
+
+    @Test
+    public void testRenameFileBadNoSuchFile() throws Exception {
+
+        ftp.init(testCommands);
+        userInput = FTPApp.split("connect eiaftp.cloudapp.net 21 eia eia");
+        ftp.execute(userInput);
+
+        userInput = FTPApp.split("mv upload/testUpload.tmp");
+        assertFalse(ftp.mv(userInput));
+
+        userInput = FTPApp.split("disconnect");
+        ftp.execute(userInput);
+    }
+
+    @Test
+    public void testRunGood() throws Exception {
+
+        ftp.init(testCommands);
+        userInput = FTPApp.split("connect eiaftp.cloudapp.net 21 eia eia");
+        ftp.execute(userInput);
+
+        File temp = File.createTempFile("testUpload", ".tmp");
+        String fileToUpload = temp.getAbsolutePath();
+
+        userInput = FTPApp.split("upload upload/testUpload.tmp " + fileToUpload);
+        assertTrue(ftp.fileTransfer(userInput));
+
+        userInput = FTPApp.split("run chmod 777 upload/testUpload.tmp");
+        assertTrue(ftp.run(userInput));
+
+        userInput = FTPApp.split("rm upload/newTestUpload.tmp");
+        assertTrue(ftp.rm(userInput));
+
+        userInput = FTPApp.split("disconnect");
+        ftp.execute(userInput);
+    }
+
 }

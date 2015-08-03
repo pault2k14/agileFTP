@@ -701,8 +701,17 @@ public class EIAClientTest {
         userInput = FTPApp.split("connect eiaftp.cloudapp.net 21 eia eia");
         ftp.execute(userInput);
 
-        userInput = FTPApp.split("run HELP");
+        File temp = File.createTempFile("testUpload", ".tmp");
+        String fileToUpload = temp.getAbsolutePath();
+
+        userInput = FTPApp.split("upload upload/testUpload.tmp " + fileToUpload);
+        assertTrue(ftp.upload(userInput));
+
+        userInput = FTPApp.split("run \"SITE CHMOD 755 upload/testUpload.tmp\"");
         assertTrue(ftp.run(userInput));
+
+        userInput = FTPApp.split("rm upload/testUpload.tmp");
+        assertTrue(ftp.rm(userInput));
 
         userInput = FTPApp.split("disconnect");
         ftp.execute(userInput);

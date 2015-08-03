@@ -549,6 +549,13 @@ public class EIAClientTest {
     }
 
     @Test
+    public void testRemoveFileBadNullRemoteFileWithPath() throws Exception {
+
+        ftp.removeFile(null);
+    }
+
+
+    @Test
     public void testRemoveFileBadNoSuchFile() throws Exception {
 
         ftp.init(testCommands);
@@ -643,6 +650,14 @@ public class EIAClientTest {
 
 
     @Test
+    public void testRenameBadNullInputStrings() throws Exception {
+
+        assertFalse(ftp.renameFile(null, ""));
+        assertFalse(ftp.renameFile("", null));
+    }
+
+
+    @Test
     public void testRenameFileGood() throws Exception {
 
         ftp.init(testCommands);
@@ -672,7 +687,7 @@ public class EIAClientTest {
         userInput = FTPApp.split("connect eiaftp.cloudapp.net 21 eia eia");
         ftp.execute(userInput);
 
-        userInput = FTPApp.split("mv upload/testUpload.tmp");
+        userInput = FTPApp.split("mv upload/testUpload.tmp upload/newTestUpload.tmp");
         assertFalse(ftp.mv(userInput));
 
         userInput = FTPApp.split("disconnect");
@@ -686,20 +701,60 @@ public class EIAClientTest {
         userInput = FTPApp.split("connect eiaftp.cloudapp.net 21 eia eia");
         ftp.execute(userInput);
 
-        File temp = File.createTempFile("testUpload", ".tmp");
-        String fileToUpload = temp.getAbsolutePath();
-
-        userInput = FTPApp.split("upload upload/testUpload.tmp " + fileToUpload);
-        assertTrue(ftp.fileTransfer(userInput));
-
-        userInput = FTPApp.split("run chmod 777 upload/testUpload.tmp");
+        userInput = FTPApp.split("run HELP");
         assertTrue(ftp.run(userInput));
-
-        userInput = FTPApp.split("rm upload/newTestUpload.tmp");
-        assertTrue(ftp.rm(userInput));
 
         userInput = FTPApp.split("disconnect");
         ftp.execute(userInput);
+    }
+
+    @Test
+    public void testRunBadNoSuchCommand() throws Exception {
+
+        ftp.init(testCommands);
+        userInput = FTPApp.split("connect eiaftp.cloudapp.net 21 eia eia");
+        ftp.execute(userInput);
+
+        userInput = FTPApp.split("run TEST123");
+        assertFalse(ftp.run(userInput));
+
+        userInput = FTPApp.split("disconnect");
+        ftp.execute(userInput);
+    }
+
+    @Test
+    public void testRunBadNullInput() throws Exception {
+
+        assertFalse(ftp.run(null));
+    }
+
+    @Test
+    public void testRunBadTooFewArgs() throws Exception {
+
+        userInput = FTPApp.split("run");
+        assertFalse(ftp.run(userInput));
+    }
+
+    @Test
+    public void testRunBadNotConnected() throws Exception {
+
+        userInput = FTPApp.split("run HELP");
+        assertFalse(ftp.run(userInput));
+    }
+
+
+
+    @Test
+    public void testRunCommandBadNotConnected() throws Exception {
+
+        assertFalse(ftp.runCommand("TEST123", ""));
+    }
+
+    @Test
+    public void testRunBadNullRemoteCommandAndParams() throws Exception {
+
+        assertFalse(ftp.runCommand(null, ""));
+        assertFalse(ftp.runCommand("", null));
     }
 
 }

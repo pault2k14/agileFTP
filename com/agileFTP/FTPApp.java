@@ -223,8 +223,8 @@ public class FTPApp {
         System.out.println("          Usage: mv <remote filename with path> <new remote filename with path>");
         System.out.println("run - Execute a arbritary command on the remote FTP server.");
         System.out.println("          Note: This can be used for any command the remote server supports.");
-        System.out.println("                Such as to change permissions of the file /upload/p.txt - run chmod 664 /upload/p.txt");
-        System.out.println("          Usage: run <command to run>");
+        System.out.println("                Such as to change permissions of the file upload/p.txt - run \"site chmod 664 upload/p.txt\"");
+        System.out.println("          Usage: run \"command to run\"");
         System.out.println("");
         System.out.println("Local");
         System.out.println("ls - Displays the contents of the current local directory.");

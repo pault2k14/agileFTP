@@ -696,16 +696,17 @@ public class EIAClient implements com.agileFTP.EIA {
 
 
     // Wrapper for remote runCommand
-    public boolean run (String []userInput) {
+    public boolean run (String[] userInput) {
 
         String userCommand = "";
+        String userCommandParams = "";
 
         if (userInput == null) {
             System.out.println("Input was null!");
             return false;
         }
 
-        if (userInput.length > 1) {
+        if (userInput.length < 2) {
             System.out.println("Incorrect number of parameters for run. Type 'help' for command syntax.");
             return false;
         }
@@ -715,11 +716,13 @@ public class EIAClient implements com.agileFTP.EIA {
             return false;
         }
 
-        for(int i = 1; i < userInput.length; ++i) {
-            userCommand = userCommand + " " + userInput[i];
+        userCommand = userInput[1];
+
+        for(int i = 2; i < userInput.length; ++i) {
+            userCommandParams = userCommandParams + " " + userInput[i];
         }
 
-        if(!runCommand(userCommand)) {
+        if(!runCommand(userCommand, userCommandParams)) {
             return false;
         }
 
@@ -728,10 +731,15 @@ public class EIAClient implements com.agileFTP.EIA {
 
 
     // Runs a command on the remote server.
-    public boolean runCommand (String remoteCommand) {
+    public boolean runCommand (String remoteCommand, String remoteCommandParams) {
 
         if(remoteCommand == null) {
             System.out.println("Remote command cannot be null.");
+            return false;
+        }
+
+        if(remoteCommandParams == null) {
+            System.out.println("Remote command parameters cannot be null.");
             return false;
         }
 
@@ -741,7 +749,7 @@ public class EIAClient implements com.agileFTP.EIA {
         }
 
         try {
-            if(!ftp.doCommand(remoteCommand, null)){
+            if(!ftp.doCommand(remoteCommand, remoteCommandParams)){
                 System.out.println("A problem occurred executing remote command.");
                 System.out.println("The remote server replied with: " + ftp.getReplyString());
                 return false;
@@ -754,6 +762,7 @@ public class EIAClient implements com.agileFTP.EIA {
         }
 
         System.out.println("Remote command successfully executed.");
+        System.out.println("The remote server replied with: " + ftp.getReplyString());
         return true;
     }
 }

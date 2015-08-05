@@ -94,6 +94,15 @@ public class EIAClient implements com.agileFTP.EIA {
             commands.put("pwd", () -> {
                 pwd();
             });
+            commands.put("rm", () -> {
+                rm(input);
+            });
+            commands.put("mv", () -> {
+                mv(input);
+            });
+            commands.put("run", () -> {
+                run(input);
+            });
 
         } catch (NullPointerException e) {
             return false;
@@ -213,6 +222,7 @@ public class EIAClient implements com.agileFTP.EIA {
 
         try {
 
+            ftp.setListHiddenFiles(true);
             directories = ftp.listDirectories();
 
             if(ftp.getReplyCode() != 226) {
@@ -557,4 +567,202 @@ public class EIAClient implements com.agileFTP.EIA {
         }
     }
 
+    // Wrapper for removeFile
+    public boolean rm (String []userInput) {
+
+        if (userInput == null) {
+            System.out.println("Input was null!");
+            return false;
+        }
+
+        if (userInput.length != 2) {
+            System.out.println("Incorrect number of parameters for rm. Type 'help' for command syntax.");
+            return false;
+        }
+
+        if (!ftp.isConnected()) {
+            System.out.println("Not connected.");
+            return false;
+        }
+
+        if(!removeFile(userInput[1])) {
+            return false;
+        }
+
+        return true;
+    }
+
+
+    // Removes a remote File
+    public boolean removeFile (String remoteFileWithPath) {
+
+        if(remoteFileWithPath == null) {
+            System.out.println("Remote file name cannot be null.");
+            return false;
+        }
+
+        if (!ftp.isConnected()) {
+            System.out.println("Not connected.");
+            return false;
+        }
+
+        try {
+            if(!ftp.deleteFile(remoteFileWithPath)){
+                System.out.println("A problem occurred removing the remote file " + remoteFileWithPath);
+                System.out.println("Please ensure that the path and filename are correct.");
+                return false;
+            }
+        }
+
+        catch (IOException e) {
+            System.out.println("A problem occurred removing the remote file " + remoteFileWithPath);
+            System.out.println("Please ensure that the path and filename are correct.");
+            return false;
+        }
+
+        System.out.println(remoteFileWithPath + " was successfully removed.");
+        return true;
+
+    }
+
+
+
+
+    // Wrapper for rename file
+    public boolean mv (String [] userInput) {
+
+        if (userInput == null) {
+            System.out.println("Input was null!");
+            return false;
+        }
+
+        if (userInput.length != 3) {
+            System.out.println("Incorrect number of parameters for mv. Type 'help' for command syntax.");
+            return false;
+        }
+
+        if (!ftp.isConnected()) {
+            System.out.println("Not connected.");
+            return false;
+        }
+
+        if(!renameFile(userInput[1], userInput[2])) {
+            return false;
+        }
+
+        return true;
+
+    }
+
+
+    // Renames a remote file.
+    public boolean renameFile (String remoteFileWithPath, String newRemoteFileWithPath) {
+
+
+        if(remoteFileWithPath == null) {
+            System.out.println("Remote file name cannot be null.");
+            return false;
+        }
+
+        if(newRemoteFileWithPath == null) {
+            System.out.println("New remote file name cannot be null.");
+            return false;
+        }
+
+        if (!ftp.isConnected()) {
+            System.out.println("Not connected.");
+            return false;
+        }
+
+        try {
+            if(!ftp.rename(remoteFileWithPath, newRemoteFileWithPath)){
+                System.out.println("A problem occurred renaming the remote file " + remoteFileWithPath);
+                System.out.println("Please ensure that the path and filename are correct.");
+                return false;
+            }
+        }
+
+        catch (IOException e) {
+            System.out.println("A problem occurred remaming the remote file " + remoteFileWithPath);
+            System.out.println("Please ensure that the path and filename are correct.");
+            return false;
+        }
+
+        System.out.println(remoteFileWithPath + " was successfully renamed to " + newRemoteFileWithPath);
+        return true;
+
+    }
+
+
+
+    // Wrapper for remote runCommand
+    public boolean run (String[] userInput) {
+
+        String userCommand = "";
+        String userCommandParams = "";
+
+        if (userInput == null) {
+            System.out.println("Input was null!");
+            return false;
+        }
+
+        if (userInput.length < 2) {
+            System.out.println("Incorrect number of parameters for run. Type 'help' for command syntax.");
+            return false;
+        }
+
+        if (!ftp.isConnected()) {
+            System.out.println("Not connected.");
+            return false;
+        }
+
+        userCommand = userInput[1];
+
+        for(int i = 2; i < userInput.length; ++i) {
+            userCommandParams = userCommandParams + " " + userInput[i];
+        }
+
+        if(!runCommand(userCommand, userCommandParams)) {
+            return false;
+        }
+
+        return true;
+    }
+
+
+    // Runs a command on the remote server.
+    public boolean runCommand (String remoteCommand, String remoteCommandParams) {
+
+        if(remoteCommand == null) {
+            System.out.println("Remote command cannot be null.");
+            return false;
+        }
+
+        if(remoteCommandParams == null) {
+            System.out.println("Remote command parameters cannot be null.");
+            return false;
+        }
+
+        if (!ftp.isConnected()) {
+            System.out.println("Not connected.");
+            return false;
+        }
+
+        try {
+            if(!ftp.doCommand(remoteCommand, remoteCommandParams)){
+                System.out.println("A problem occurred executing remote command.");
+                System.out.println("The remote server replied with: " + ftp.getReplyString());
+                return false;
+            }
+        }
+
+        catch (IOException e) {
+            System.out.println("A problem occurred executing remote command.");
+            return false;
+        }
+
+        System.out.println("Remote command successfully executed.");
+        System.out.println("The remote server replied with: " + ftp.getReplyString());
+        return true;
+    }
 }

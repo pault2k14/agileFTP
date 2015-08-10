@@ -345,7 +345,7 @@ public class EIAClientTest {
     public void testDownload() throws Exception {
 
         ftp.init(testCommands);
-        userInput = "connect speedtest.tele2.net 21 Anonymous".split(" ");
+        userInput = "connect eiaftp.cloudapp.net 21 eia eia".split(" ");
         ftp.execute(userInput);
 
         userInput = "download 512KB.zip localtest.zip".split(" ");
@@ -359,7 +359,7 @@ public class EIAClientTest {
     public void testDownloadBad() throws Exception {
 
         ftp.init(testCommands);
-        userInput = "connect speedtest.tele2.net 21 Anonymous".split(" ");
+        userInput = "connect eiaftp.cloudapp.net 21 eia eia".split(" ");
         ftp.execute(userInput);
 
         userInput = "download 5kb.zip localtest.zip".split(" ");

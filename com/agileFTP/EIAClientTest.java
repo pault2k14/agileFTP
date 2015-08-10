@@ -345,11 +345,47 @@ public class EIAClientTest {
     public void testDownload() throws Exception {
 
         ftp.init(testCommands);
-        userInput = "connect speedtest.tele2.net 21 Anonymous".split(" ");
+        userInput = "connect eiaftp.cloudapp.net 21 eia eia".split(" ");
         ftp.execute(userInput);
 
         userInput = "download 512KB.zip localtest.zip".split(" ");
         assertEquals(true, ftp.download(userInput));
+
+        userInput = "disconnect".split(" ");
+        ftp.execute(userInput);
+    }
+
+    @Test
+    public void testDownloadBad() throws Exception {
+
+        ftp.init(testCommands);
+        userInput = "connect eiaftp.cloudapp.net 21 eia eia".split(" ");
+        ftp.execute(userInput);
+
+        userInput = "download 5kb.zip localtest.zip".split(" ");
+        assertEquals(false, ftp.download(userInput));
+
+        userInput = "disconnect".split(" ");
+        ftp.execute(userInput);
+    }
+
+    @Test
+    public void testDownloadNotConnectedBad() throws Exception {
+
+        userInput = "download 5kb.zip localtest.zip".split(" ");
+        assertEquals(false, ftp.download(userInput));
+
+    }
+
+    @Test
+    public void testDownloadTooManyArgsBad() throws Exception {
+
+        ftp.init(testCommands);
+        userInput = "connect speedtest.tele2.net 21 Anonymous".split(" ");
+        ftp.execute(userInput);
+
+        userInput = "download 5kb.zip localtest.zip extra extra".split(" ");
+        assertEquals(false, ftp.download(userInput));
 
         userInput = "disconnect".split(" ");
         ftp.execute(userInput);

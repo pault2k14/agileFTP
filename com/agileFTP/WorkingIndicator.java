@@ -70,19 +70,12 @@ public class WorkingIndicator extends Thread {
         }
     }
 
+    //functionally changed to be a test for a bad file
+    //working() gets called if file size is 0 or if ftp is null
     public void working() {
-        Thread thisThread = Thread.currentThread();
-        indicator = Thread.currentThread();
-        while(indicator == thisThread) {
-            index %= scenes.length;
-            System.out.print(scenes[index++] + '\r');
-            try {
-                Thread.sleep(300);
-            } catch (InterruptedException e){
-                return;
-            }
-        }
+        System.out.println("Not a valid file to download.");
     }
+
 
     public void terminate() {
         indicator = null;

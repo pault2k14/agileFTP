@@ -446,46 +446,48 @@ public class EIAClientTest {
         ftp.execute(userInput);
     }
 
-    /*
-    * speedtest.tele2.net immediately removes any created/deleted files.
-    * Unable to test rmdir until we have a fully operational FTP server
-    * (hopefully provided by professor?).  Meanwhile, I've tested it on a local ftp server
-    * running on my macbook.
-    */
-    /*
+
     @Test
     public void testMkDirGood() throws Exception {
         ftp.init(testCommands);
-        userInput = "connect speedtest.tele2.net 21 Anonymous".split(" ");
+
+        userInput = FTPApp.split("connect eiaftp.cloudapp.net 21 eia eia");
+        //userInput = "connect speedtest.tele2.net 21 Anonymous".split(" ");
         ftp.execute(userInput);
+        userInput = "rmdir testDirectory".split(" "); // remove directory if already there
+        ftp.rmdir(userInput);
         userInput = "mkdir testDirectory".split(" ");
         assertTrue(ftp.mkdir(userInput));
+        userInput = "rmdir testDirectory".split(" "); // cleanup (delete) the test directory
+        ftp.rmdir(userInput);
     }
-    @Test
-    public void testMkDirBad() throws Exception {
-        ftp.init(testCommands);
-        userInput = "connect speedtest.tele2.net 21 Anonymous".split(" ");
-        ftp.execute(userInput);
-        userInput = "mkdir upload".split(" ");
-        assertFalse(ftp.mkdir(userInput));
-    }
+
+
     @Test
     public void testRmDirGood() throws Exception {
         ftp.init(testCommands);
-        userInput = "connect speedtest.tele2.net 21 Anonymous".split(" ");
+        userInput = FTPApp.split("connect eiaftp.cloudapp.net 21 eia eia");
+        //userInput = "connect speedtest.tele2.net 21 Anonymous".split(" ");
         ftp.execute(userInput);
+        userInput = "mkdir testDirectory".split(" ");
+        ftp.mkdir(userInput);
         userInput = "rmdir testDirectory".split(" ");
         assertTrue(ftp.rmdir(userInput));
     }
+
+
     @Test
     public void testRmDirBad() throws Exception {
         ftp.init(testCommands);
-        userInput = "connect speedtest.tele2.net 21 Anonymous".split(" ");
+        userInput = FTPApp.split("connect eiaftp.cloudapp.net 21 eia eia");
+        //userInput = "connect speedtest.tele2.net 21 Anonymous".split(" ");
         ftp.execute(userInput);
-        userInput = "rmdir upload".split(" ");
+        userInput = "rmdir testDoubleDeleteDirectory".split(" ");
+        ftp.rmdir(userInput);
+        userInput = "rmdir testDoubleDeleteDirectory".split(" ");
         assertFalse(ftp.rmdir(userInput));
     }
-    */
+//
 
     @Test
     public void testCdGood() throws Exception {
@@ -516,15 +518,12 @@ public class EIAClientTest {
 
         // Record current working directory
         currentDir = ftp.pwd();
-
         // cd to upload directory
         userInput = "cd upload".split(" ");
         ftp.cd(userInput);
-
         // cd back to base directory
         userInput = "cd ..".split(" ");
         ftp.cd(userInput);
-
         // confirm we're back to the original working directory
         assertEquals(currentDir, ftp.pwd());
 

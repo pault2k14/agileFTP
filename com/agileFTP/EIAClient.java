@@ -439,6 +439,10 @@ public class EIAClient implements com.agileFTP.EIA {
 
     /**
      * Change directory on remote server (cd command)
+     * Takes a string 'input' from the command line and changes the current working directory
+     * to the specified directory on the connected remote ftp server using the syntax
+     * 'cd <directory>'
+     * Example usage (Mac): 'cd upload'
      * @param input The name of the directory to cd to.  Either full path or relative to current
      * @return true if successful
      */
@@ -475,7 +479,9 @@ public class EIAClient implements com.agileFTP.EIA {
 
     /**
      * Print working directory on remote server
-     * Directory string is printed to System.out, as well as returned
+     * Displays the current working directory on the connected remote ftp server using the syntax
+     * 'pwd'.  Directory string is printed to System.out, as well as returned.
+     * Example usage (Mac): 'pwd'
      * @return String of the current working directory
      *         or null if unsuccessful
      */
@@ -507,6 +513,10 @@ public class EIAClient implements com.agileFTP.EIA {
 
     /**
      * Make a directory on remote server
+     * Takes a string 'input' from the command line and makes the
+     * specified directory on the connected remote ftp server using the syntax
+     * 'mkdir <directory>'
+     * Example usage (Mac): 'mkdir kragle_top_secret'
      * @param input The name of the directory to make
      * @return true if successful
      */
@@ -537,6 +547,10 @@ public class EIAClient implements com.agileFTP.EIA {
 
     /**
      * Delete a directory on remote server
+     * Takes a string 'input' from the command line and deletes the specified directory on
+     * the connected remote ftp server using the syntax
+     * 'rmdir <directory>'
+     * Example usage (Mac): 'rmdir everything_is_awesome_lyrics'
      * @param input The name of the directory to remove.
      * @return true if successful
      */

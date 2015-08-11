@@ -29,6 +29,7 @@ public class EIALocalTest {
         assertEquals(resultPath, testPath);
     }
 
+
     @Test
     public void testGetDecorator() throws Exception {
 
@@ -40,6 +41,7 @@ public class EIALocalTest {
         assertEquals(resultDecorator, testDecorator);
     }
 
+
     @Test
     public void testExecuteGood() throws Exception {
         local.init(testCommands);
@@ -48,6 +50,7 @@ public class EIALocalTest {
         assertTrue(result);
     }
 
+
     @Test
     public void testExecuteBad() throws Exception {
         local.init(testCommands);
@@ -55,6 +58,7 @@ public class EIALocalTest {
         result = local.execute(userInput);
         assertFalse(result);
     }
+
 
     @Test
     public void testInitGood() throws Exception {
@@ -66,6 +70,7 @@ public class EIALocalTest {
     public void testInitBad() throws Exception {
         assertEquals(false, local.init(null));
     }
+
 
     @Test
     public void testLs() throws Exception {

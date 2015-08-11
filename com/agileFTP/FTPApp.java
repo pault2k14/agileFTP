@@ -3,15 +3,8 @@ package com.agileFTP;
 import java.util.*;
 
 
-// FTP for testing connect, login, ls, get (Not much else can be done on this server.
-//                                          Setup a local ftp for more functionality)
-// host speedtest.tele2.net
-// port 21
-// username Anonymous
-// password <none>
-
-
-// Class for the user interface.
+// Class for the FTPApp user interface, and intergration
+// with the EIAClient and EIALocal class objects.
 public class FTPApp {
 
     private EIAClient ftp = new EIAClient();
@@ -24,7 +17,11 @@ public class FTPApp {
     private HashMap<String, Runnable> commands = new HashMap<String, Runnable>();
 
 
-    // Setup and initialize the user interface.
+    /**
+     * etup and initialize the user interface.
+     * @param
+     * @return boolean
+     */
     public static void main(String[] args) {
 
         FTPApp App = new FTPApp();
@@ -33,7 +30,12 @@ public class FTPApp {
 
     }
 
-    // Holds the user input loop.
+
+    /**
+     * Holds the user input loop.
+     * @param
+     * @return boolean
+     */
     public boolean start() {
 
         while(guard) {
@@ -46,7 +48,13 @@ public class FTPApp {
 
     }
 
-    // Setup hashmap, initialize ftp and local objects.
+
+    /**
+     * Initializes the EIAClient class variables.
+     * Sets up the hashmap, initialize ftp and local objects.
+     * @param
+     * @return boolean
+     */
     public boolean init() {
 
         try {
@@ -71,8 +79,12 @@ public class FTPApp {
     }
 
 
-    // Splits a user's input by spaces, but keeps
-    // input surrounded by quotes as one unit.
+    /**
+     * Splits a user's input by spaces, but keeps input surrounded by quotes as one unit.
+     * Takes a string input, that contains the user's input to be parsed.
+     * @param input
+     * @return String
+     */
     public static String[] split(String input) {
 
         char[] userInput = null;
@@ -177,7 +189,12 @@ public class FTPApp {
     }
 
 
-    // Displays command syntax help.
+    /**
+     * Displays command syntax help.
+     * Syntax: help
+     * @param
+     * @return void
+     */
     public boolean help() {
         String save = "save - Saves a connection config." +
                 "\n          Usage: save <hostname> <port> <username> [password]" +
@@ -225,18 +242,25 @@ public class FTPApp {
         System.out.println("          Note: This can be used for any command the remote server supports.");
         System.out.println("                Such as to change permissions of the file upload/p.txt - run \"site chmod 664 upload/p.txt\"");
         System.out.println("          Usage: run \"command to run\"");
-        System.out.println("");
-        System.out.println("Local");
-        System.out.println("ls - Displays the contents of the current local directory.");
         System.out.println(save);
         System.out.println(list);
         System.out.println(delete);
+        System.out.println("");
+        System.out.println("Local");
+        System.out.println("ls - Displays the contents of the current local directory.");
         System.out.println("");
 
         return true;
     }
 
-    // Passes user commands from the FTPApp to the class currently in use.
+
+    /**
+     * Looks up the users command in the FTPApp hashmap, then runs the command.
+     * Takes a string array userInput that contains the paramemters that will be passed to the method
+     * to be executed.
+     * @param input
+     * @return boolean
+     */
     public boolean execute(String []input) {
 
         try {
@@ -252,7 +276,15 @@ public class FTPApp {
         }
 
     }
-    // Exit Awesome FTP.
+
+
+    /**
+     * Exits from the FTP application.
+     * Disconnects from the remote server, and terminates the program.
+     * Syntax: exit
+     * @param
+     * @return void
+     */
     public void exit() {
 
         guard = false;
@@ -263,7 +295,13 @@ public class FTPApp {
     }
 
 
-    // Allows the user to switch the mode they are operating in, local or remote.
+    /**
+     * Allows the user to switch the mode they are operating in, local or remote.
+     * Takes a string choice, that contains the mode choice of the user.
+     * Syntax: mode <remote|local>
+     * @param choice
+     * @return boolean
+     */
     public boolean mode(String choice) {
 
         if (choice.equalsIgnoreCase("remote")) {

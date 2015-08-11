@@ -311,10 +311,7 @@ public class EIAClientTest {
     }
 
 
-    // This test won't pass until the underlying problems with specifying a non existent filename in
-    // the upload and download functions are fixed.
-    // Please enable when those are fixed.
-    //@Test
+    @Test
     public void testFileTransferMultiDownloadAndUploadBad() throws Exception {
 
         ftp.init(testCommands);
@@ -452,7 +449,6 @@ public class EIAClientTest {
         ftp.init(testCommands);
 
         userInput = FTPApp.split("connect eiaftp.cloudapp.net 21 eia eia");
-        //userInput = "connect speedtest.tele2.net 21 Anonymous".split(" ");
         ftp.execute(userInput);
         userInput = "rmdir testDirectory".split(" "); // remove directory if already there
         ftp.rmdir(userInput);
@@ -467,7 +463,6 @@ public class EIAClientTest {
     public void testRmDirGood() throws Exception {
         ftp.init(testCommands);
         userInput = FTPApp.split("connect eiaftp.cloudapp.net 21 eia eia");
-        //userInput = "connect speedtest.tele2.net 21 Anonymous".split(" ");
         ftp.execute(userInput);
         userInput = "mkdir testDirectory".split(" ");
         ftp.mkdir(userInput);
@@ -480,7 +475,6 @@ public class EIAClientTest {
     public void testRmDirBad() throws Exception {
         ftp.init(testCommands);
         userInput = FTPApp.split("connect eiaftp.cloudapp.net 21 eia eia");
-        //userInput = "connect speedtest.tele2.net 21 Anonymous".split(" ");
         ftp.execute(userInput);
         userInput = "rmdir testDoubleDeleteDirectory".split(" ");
         ftp.rmdir(userInput);
@@ -545,23 +539,6 @@ public class EIAClientTest {
         assertEquals(ftp.pwd(), currentDir);
     }
 
-    /**
-     * speedtest.tele2.net immediately removes any created/deleted files.
-     * Unable to test rmdir until we have a fully operational FTP server
-     * (hopefully provided by professor?).  Meanwhile, I've tested it on a local ftp server
-     * running on my macbook.
-     */
-    /*
-    @Test
-    public void testRmDirGood() throws Exception {
-        ftp.init(testCommands);
-        userInput = "connect speedtest.tele2.net 21 Anonymous".split(" ");
-        ftp.execute(userInput);
-        assertTrue(ftp.mkdir("rmdir testDirectory".split(" ")));
-        userInput = "disconnect".split(" ");
-        ftp.execute(userInput);
-    }
-    */
 
     @Test
     public void testRemoveFileGood() throws Exception {
@@ -799,6 +776,23 @@ public class EIAClientTest {
 
         assertFalse(ftp.runCommand(null, ""));
         assertFalse(ftp.runCommand("", null));
+    }
+
+
+    @Test
+    public void IntegrationTestEIAClientConnectionStoreGood() throws Exception {
+        ftp.init(testCommands);
+        userInput = FTPApp.split("save eiaftp.cloudapp.net 21 eia eia");
+        ftp.execute(userInput);
+
+        userInput = FTPApp.split("connect eiaftp.cloudapp.net");
+        assertTrue(ftp.execute(userInput));
+
+        userInput = FTPApp.split("delete eiaftp.cloudapp.net");
+        ftp.execute(userInput);
+
+        userInput = FTPApp.split("disconnect");
+        ftp.execute(userInput);
     }
 
 }

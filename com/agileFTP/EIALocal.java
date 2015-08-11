@@ -8,6 +8,7 @@ import java.util.HashMap;
 import org.apache.commons.io.FileUtils;
 
 // Class for local machine based tasks.
+// Must be initialized before use.
 public class EIALocal implements EIA {
 
     private String []input = null;
@@ -15,20 +16,36 @@ public class EIALocal implements EIA {
     private SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yy HH:mm:ss");
     private HashMap<String, Runnable> commands = new HashMap<String, Runnable>();
 
-    // Return the current local path variable.
+
+    /**
+     * Return the current local path variable.
+     * @param
+     * @return String
+     */
     public String getPath() {
 
         return currentDirectory.getAbsolutePath();
     }
 
-   // Return the current local decorator variable.
+
+    /**
+     * Returns the decorator for this class.
+     * @param
+     * @return String
+     */
     public String getDecorator() {
 
         return currentDirectory.getAbsolutePath();
     }
 
-    // Lookup the method in the hashmap and then execute the
-    // corresponding method.
+
+    /**
+     * Looks up the users command in the remote hashmap, then runs the command.
+     * Takes a string array input that contains the paramemters that will be passed to the method
+     * to be executed.
+     * @param userInput
+     * @return boolean
+     */
     public boolean execute(String []userInput) {
         input = userInput;
 
@@ -42,8 +59,15 @@ public class EIALocal implements EIA {
         return true;
     }
 
-    // Add all of the FTPApp's local haspmap into our hashmap.
-    // Then load our local hashmap key's and lambda functions.
+
+    /**
+     * Initializes the EIALocal class variables.
+     * Creates a hashmap of commands that can be called.
+     * Takes a hashmap from the main application, that adds all of the main application commands
+     * to this hashmap.
+     * @param main
+     * @return boolean
+     */
     public boolean init(HashMap main) {
         try {
             commands.putAll(main);
@@ -56,7 +80,13 @@ public class EIALocal implements EIA {
         return true;
     }
 
-    // Display the contents of the currentDirectory.
+
+    /**
+     * Display the contents of the currentDirectory.
+     * Syntax: ls
+     * @param
+     * @return boolean
+     */
     protected boolean ls() {
 
         System.out.println("NAME  SIZE  LAST MODIFIED");

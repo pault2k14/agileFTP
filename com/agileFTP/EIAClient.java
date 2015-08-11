@@ -15,20 +15,24 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 // Class for all remote server tasks.
+// Must be initialized before use.
 public class EIAClient implements com.agileFTP.EIA {
 
     //to log exceptions
     private static final Logger logger = Logger.getLogger(EIAClient.class.getName());
-
     private FTPClient ftp = new FTPClient();
     private String []input = null;
     private String host = "Not connected";
     private HashMap<String, Runnable> commands = new HashMap<String, Runnable>();
-
     private ConnectionStore connectionStore = new ConnectionStore();
 
-    // Looks up the users command in the remote hashmap
-    // then runs the lambda function.
+    /**
+     * Looks up the users command in the remote hashmap, then runs the command.
+     * Takes a string array input that contains the paramemters that will be passed to the method
+     * to be executed.
+     * @param userInput
+     * @return boolean
+     */
     public boolean execute(String []userInput) {
         input = userInput;
 
@@ -42,21 +46,37 @@ public class EIAClient implements com.agileFTP.EIA {
         return true;
     }
 
-    // Returns the hostname as a string.
+
+    /**
+     * Returns the current host.
+     * @param
+     * @return String
+     */
     public String getHost() {
 
         return host;
     }
 
-    // Returns the remote decorator as a string.
+
+    /**
+     * Returns the decorator for this class.
+     * @param
+     * @return String
+     */
     public String getDecorator() {
 
         return host;
     }
 
 
-    // Hashmap of the FTPApp is added to this hashmap
-    // Then the remote hashmap is setup.
+    /**
+     * Initializes the EIAClient class variables.
+     * Creates a hashmap of commands that can be called.
+     * Takes a hashmap from the main application, that adds all of the main application commands
+     * to this hashmap.
+     * @param main
+     * @return boolean
+     */
     public boolean init(HashMap main) {
 
         try {
@@ -112,9 +132,15 @@ public class EIAClient implements com.agileFTP.EIA {
     }
 
 
-
-
-    // Connect wrapper to determine if the user entered a password or not.
+    /**
+     * Wrapper for connect method.
+     * Takes a string array input that contains the paramemters that will be interpreted and
+     * passed to the connect method.
+     * Syntax: connect <hostname> <port> <username [password]
+     *     or  connect <name of saved connection>
+     * @param input
+     * @return boolean
+     */
     protected boolean connect(String []input) {
 
         if(input == null) {
@@ -142,14 +168,22 @@ public class EIAClient implements com.agileFTP.EIA {
     }
 
 
-    // Connect to the remote server
+    /**
+     * Connect to a remote server.
+     * Takes a string userHost, which contains the hostname of the server to connect to. Takes a string
+     * port, which contains the port number of the port to connect to. Takes the string username, which contains
+     * the username to provide to the remtoe server. Takes string password, which contains the password to
+     * send to the remote server.
+     * Syntax: No direct syntax, called through wrapper only.
+     * @param userHost, port, username, password
+     * @return boolean
+     */
     protected boolean connectToHost(String userHost, String port, String username, String password) {
 
         if (userHost == null || port == null  || username == null || password == null) {
             System.out.println("Error: hostname, port, and username must be provided.");
             return false;
         }
-
 
         if (ftp.isConnected()) {
             System.out.println("Already connected, disconnect first.");
@@ -188,7 +222,13 @@ public class EIAClient implements com.agileFTP.EIA {
         return true;
     }
 
-    // Disconnect from the remote server.
+
+    /**
+     * Disconnects from the remote server.
+     * Syntax: disconnect
+     * @param
+     * @return boolean
+     */
     protected boolean disconnect() {
 
         if (!ftp.isConnected()) {
@@ -209,7 +249,12 @@ public class EIAClient implements com.agileFTP.EIA {
     }
 
 
-    // Display the contents of the current remote directory.
+    /**
+     * Displays the contents of the current remote directory.
+     * Syntax: ls
+     * @param
+     * @return boolean
+     */
     protected boolean ls() {
 
         FTPFile []directories = null;
@@ -257,7 +302,15 @@ public class EIAClient implements com.agileFTP.EIA {
 
     }
 
-    // Wrapper function for file uploading.
+    /**
+     * Wrapper for upload and download methods
+     * Takes a string array userInput that contains the paramemters that will be interpreted and
+     * passed to the upload or download method.
+     * Syntax: upload | download <local|remote filename to upload|download with path>
+     *     <new local|remote filename to associated with filename with path to be uploaded|downloaded>
+     * @param userInput
+     * @return boolean
+     */
     public boolean fileTransfer(String[] userInput) {
 
         String[] transferArray = null;
@@ -581,7 +634,15 @@ public class EIAClient implements com.agileFTP.EIA {
         }
     }
 
-    // Wrapper for removeFile
+
+    /**
+     * Wrapper for the renameFile method.
+     * Takes a string array userInput that contains the paramemters that will be interpreted and
+     * passed to removeFile method.
+     * Syntax: rm <remote filename with path to remove>
+     * @param userInput
+     * @return boolean
+     */
     public boolean rm (String []userInput) {
 
         if (userInput == null) {
@@ -607,7 +668,14 @@ public class EIAClient implements com.agileFTP.EIA {
     }
 
 
-    // Removes a remote File
+    /**
+     * Removes a file om the remote server.
+     * Takes a string remoteFileWithPath from the wrapper, this contains the absolute path of
+     * the remote file to be removed.
+     * Syntax: No direct syntax, called through wrapper only.
+     * @param remoteFileWithPath
+     * @return boolean
+     */
     public boolean removeFile (String remoteFileWithPath) {
 
         if(remoteFileWithPath == null) {
@@ -640,9 +708,14 @@ public class EIAClient implements com.agileFTP.EIA {
     }
 
 
-
-
-    // Wrapper for rename file
+    /**
+     * Wrapper for the renameFile method.
+     * Takes a string array userInput that contains the paramemters that will be interpreted and
+     * passed to renameFile method.
+     * Syntax: mv <remote filename with path> <new remote filename with path>
+     * @param userInput
+     * @return boolean
+     */
     public boolean mv (String [] userInput) {
 
         if (userInput == null) {
@@ -669,7 +742,15 @@ public class EIAClient implements com.agileFTP.EIA {
     }
 
 
-    // Renames a remote file.
+    /**
+     * Renames a file om the remote server.
+     * Takes a string remoteFileWithPath from the wrapper, this contains the absolute path of
+     * the remote file. Also takes a string newRemoteFileWithPath, this contains the new absolute path
+     * and name of the file.
+     * Syntax: No direct syntax, called through wrapper only.
+     * @param remoteFileWithPath, newRemoteFileWithPath
+     * @return boolean
+     */
     public boolean renameFile (String remoteFileWithPath, String newRemoteFileWithPath) {
 
 
@@ -708,8 +789,14 @@ public class EIAClient implements com.agileFTP.EIA {
     }
 
 
-
-    // Wrapper for remote runCommand
+    /**
+     * Wrapper for the runCommand method.
+     * Takes a string array userInput that contains the paramemters that will be interpreted and
+     * passed to runCommand.
+     * Syntax: run "remote command to execute"
+     * @param userInput
+     * @return boolean
+     */
     public boolean run (String[] userInput) {
 
         String userCommand = "";
@@ -744,7 +831,15 @@ public class EIAClient implements com.agileFTP.EIA {
     }
 
 
-    // Runs a command on the remote server.
+    /**
+     * Runs a command on the remote server.
+     * Takes a string remoteCommand from the wrapper, which is the remote command that a user wants to
+     * run on the remote server. Also takes a string remoteCommandParams from the wrapper, which are the
+     * parameters for the command the user wants to run on the remote server.
+     * Syntax: No direct syntax, called through wrapper only.
+     * @param remoteCommand, remoteCommandParams
+     * @return boolean
+     */
     public boolean runCommand (String remoteCommand, String remoteCommandParams) {
 
         if(remoteCommand == null) {

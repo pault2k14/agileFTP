@@ -3,6 +3,7 @@ package com.agileFTP;
 import java.io.*;
 import java.util.Arrays;
 import java.util.HashMap;
+import org.jasypt.util.text.BasicTextEncryptor;
 
 
 /**
@@ -92,17 +93,17 @@ public class ConnectionStore {
     }
 
     private void storeConnections() {
-      try
-      {
-          File f = new File(PathHelper.getPathFromUserHome("connections.ser"));
-          if(!f.exists())
-              f.createNewFile();
-          FileOutputStream fileOut = new FileOutputStream(f);
-          ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
-          objectOut.writeObject(this.connectionData);
-          objectOut.close();
-          fileOut.close();
-      }catch(IOException i){}
+        try
+        {
+            File f = new File(PathHelper.getPathFromUserHome("connections.ser"));
+            if(!f.exists())
+                f.createNewFile();
+            FileOutputStream fileOut = new FileOutputStream(f);
+            ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
+            objectOut.writeObject(this.connectionData);
+            objectOut.close();
+            fileOut.close();
+        }catch(IOException i){}
     }
 
     private static class ConnectionData implements Serializable {
@@ -114,8 +115,11 @@ public class ConnectionStore {
         }
 
         public void save(String connection, String host, String port, String name, String password) {
-            String pw = new sun.misc.BASE64Encoder().encode(password.getBytes());
-            String [] array = {host, port, name, pw};
+            BasicTextEncryptor textEncryptor = new BasicTextEncryptor();
+            textEncryptor.setPassword("12345ARandomStringWithNumbers54321");
+            password = textEncryptor.encrypt(password);
+
+            String [] array = {host, port, name, password};
             connections.put(connection, array);
         }
 
@@ -131,14 +135,9 @@ public class ConnectionStore {
                 toReturn[i] = temp[i - 1];
             }
             if(toReturn.length == 5) {
-                String password;
-                try{
-                    password = new String(new sun.misc.BASE64Decoder().decodeBuffer(toReturn[4]));
-                }
-                catch (IOException e) {
-                    password = "";
-                }
-                toReturn[4] = password;
+                BasicTextEncryptor textEncryptor = new BasicTextEncryptor();
+                textEncryptor.setPassword("12345ARandomStringWithNumbers54321");
+                toReturn[4] = textEncryptor.decrypt(toReturn[4]);
             }
             return toReturn;
         }

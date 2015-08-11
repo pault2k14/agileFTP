@@ -782,13 +782,13 @@ public class EIAClientTest {
     @Test
     public void IntegrationTestEIAClientConnectionStoreGood() throws Exception {
         ftp.init(testCommands);
-        userInput = FTPApp.split("save eiaftp.cloudapp.net 21 eia eia");
+        userInput = FTPApp.split("save TeamsFTPServer eiaftp.cloudapp.net 21 eia eia");
         ftp.execute(userInput);
 
-        userInput = FTPApp.split("connect eiaftp.cloudapp.net");
+        userInput = FTPApp.split("connect TeamsFTPServer");
         assertTrue(ftp.execute(userInput));
 
-        userInput = FTPApp.split("delete eiaftp.cloudapp.net");
+        userInput = FTPApp.split("delete TeamsFTPServer");
         ftp.execute(userInput);
 
         userInput = FTPApp.split("disconnect");

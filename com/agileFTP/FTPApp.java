@@ -74,6 +74,7 @@ public class FTPApp {
         mode("remote");
 
         System.out.println("Team Everything is Awesome presents: Awesome FTP!");
+        System.out.println("Type 'help' for command syntax assistance.");
 
         return true;
     }
@@ -200,7 +201,7 @@ public class FTPApp {
                 "\n          Usage: save <name of connection> <hostname> <port> <username> [password]" +
                 "\n          Note: The password field is optional.";
         String delete = "delete - Deletes a saved connection." +
-                "\n          Usage: delete <saved connection>";
+                "\n          Usage: delete <name of connection>";
         String list = "list - Lists available saved connections.";
 
 
@@ -216,7 +217,7 @@ public class FTPApp {
         System.out.println("ls - Displays the contents of the current remote directory.");
         System.out.println("connect - Connect to a remote FTP host or saved connection.");
         System.out.println("          Usage: connect <hostname> <port> <username> [password]");
-        System.out.println("             or: connect <saved connection>");
+        System.out.println("             or: connect <name of saved connection>");
         System.out.println("          Note: The password field is optional.");
         System.out.println("disconnect - Disconnect from the remote FTP host.");
         System.out.println("download - Download a single file from the FTP host.");

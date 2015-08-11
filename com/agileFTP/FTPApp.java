@@ -197,7 +197,7 @@ public class FTPApp {
      */
     public boolean help() {
         String save = "save - Saves a connection config." +
-                "\n          Usage: save <hostname> <port> <username> [password]" +
+                "\n          Usage: save <name of connection> <hostname> <port> <username> [password]" +
                 "\n          Note: The password field is optional.";
         String delete = "delete - Deletes a saved connection." +
                 "\n          Usage: delete <saved connection>";
